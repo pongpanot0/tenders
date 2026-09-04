@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import type { Queue } from "bullmq";
 import { createHash } from "node:crypto";
 import { PrismaService } from "../prisma/prisma.service";
@@ -13,6 +13,8 @@ const ADAPTERS: Record<string, () => SourceAdapter> = {
 
 @Injectable()
 export class IngestionService {
+  private readonly logger = new Logger(IngestionService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly rawStorage: RawStorageService,
@@ -36,24 +38,40 @@ export class IngestionService {
 
     let itemsFetched = 0;
 
-    for await (const record of adapter.discover()) {
-      const content = Buffer.from(JSON.stringify(record.lightweightPayload));
-      const payloadHash = createHash("sha256").update(content).digest("hex");
-      const key = `${config.sourceId}/${sourceRun.id}/${record.externalId}.json`;
+    try {
+      for await (const record of adapter.discover()) {
+        const content = Buffer.from(JSON.stringify(record.lightweightPayload));
+        const payloadHash = createHash("sha256").update(content).digest("hex");
+        const key = `${config.sourceId}/${sourceRun.id}/${record.externalId}.json`;
 
-      await this.rawStorage.save(key, content);
+        await this.rawStorage.save(key, content);
 
-      const rawRecord = await this.prisma.rawRecord.create({
-        data: {
-          sourceRunId: sourceRun.id,
-          externalId: record.externalId,
-          payloadUri: key,
-          payloadHash,
-        },
+        const rawRecord = await this.prisma.rawRecord.create({
+          data: {
+            sourceRunId: sourceRun.id,
+            externalId: record.externalId,
+            payloadUri: key,
+            payloadHash,
+          },
+        });
+
+        await this.parseQueue.add("parse", { rawRecordId: rawRecord.id });
+        itemsFetched += 1;
+      }
+    } catch (error) {
+      this.logger.error(
+        `Ingestion run ${sourceRun.id} for source ${config.sourceId} failed after ${itemsFetched} item(s): ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        error instanceof Error ? error.stack : undefined,
+      );
+
+      await this.prisma.sourceRun.update({
+        where: { id: sourceRun.id },
+        data: { status: "FAILED", itemsFetched, finishedAt: new Date() },
       });
 
-      await this.parseQueue.add("parse", { rawRecordId: rawRecord.id });
-      itemsFetched += 1;
+      throw error;
     }
 
     await this.prisma.sourceRun.update({

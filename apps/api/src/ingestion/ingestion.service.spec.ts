@@ -75,4 +75,25 @@ describe("IngestionService", () => {
     const jobCounts = await queue.getJobCounts("waiting");
     expect(jobCounts.waiting).toBeGreaterThanOrEqual(2);
   });
+
+  it("marks the source run FAILED when discovery throws mid-iteration", async () => {
+    const page1 = JSON.parse(fs.readFileSync(path.join(FIXTURES, "uk-ftts-page1.json"), "utf-8"));
+    nock(HOST).get(PATH).reply(200, page1);
+    nock(HOST).get(PATH).query({ cursor: "page2" }).reply(500);
+
+    await expect(service.runSource(sourceConfigId)).rejects.toThrow();
+
+    const failedRun = await prisma.sourceRun.findFirst({
+      where: { sourceConfigId, status: "FAILED" },
+      orderBy: { startedAt: "desc" },
+    });
+
+    expect(failedRun).not.toBeNull();
+    expect(failedRun?.status).toBe("FAILED");
+    expect(failedRun?.itemsFetched).toBe(1);
+    expect(failedRun?.finishedAt).not.toBeNull();
+
+    const rawRecords = await prisma.rawRecord.findMany({ where: { sourceRunId: failedRun!.id } });
+    expect(rawRecords).toHaveLength(1);
+  });
 });
