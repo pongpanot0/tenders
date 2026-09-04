@@ -8,6 +8,9 @@ for the scaffold design.
 
 - `apps/api` — NestJS API + BullMQ worker (ingestion, parsing, versioning, outbox, REST API)
 - `packages/schema` — shared canonical tender schema (JSON Schema + TS types)
+  — forward-looking canonical contract; not yet enforced by the ingestion
+  pipeline (`TenderProcessorService`'s `normalizedJson` is currently a
+  smaller ad-hoc shape) — see follow-up work.
 
 No frontend is scaffolded here — a separate mockup/frontend consumes
 `GET /v1/tenders` (see its response shape in
@@ -44,9 +47,21 @@ docker compose exec postgres psql -U tender -d tender_intel -c \
   "insert into source_configs (id, source_id, environment, enabled) values (gen_random_uuid(), 'uk_find_a_tender', 'production', true);"
 ```
 
-Trigger an ingestion run via the Nest CLI REPL, or add a small admin
-endpoint in a later plan — this scaffold intentionally has no
-scheduler/admin trigger yet (see the design doc's "Out of Scope").
+Trigger an ingestion run via the Nest CLI REPL — this scaffold
+intentionally has no scheduler/admin trigger yet (see the design
+doc's "Out of Scope"). A small REPL entrypoint (`apps/api/src/repl.ts`)
+boots the worker's module graph so `IngestionService` is available:
+
+```bash
+docker compose exec worker node dist/repl.js
+# or locally: cd apps/api && pnpm start:repl
+```
+
+Inside the REPL:
+
+```js
+get(IngestionService).runSource('<sourceConfigId>')
+```
 
 ### Run backend tests locally
 
