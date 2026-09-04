@@ -8,6 +8,9 @@ describe("TenderProcessorService", () => {
   let prisma: PrismaService;
   let service: TenderProcessorService;
   let rawRecordId: string;
+  let sourceRunId: string;
+  let sourceConfigId: string;
+  let tenderId: string | null = null;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -34,9 +37,11 @@ describe("TenderProcessorService", () => {
     const config = await prisma.sourceConfig.create({
       data: { sourceId: source.id, environment: "test", enabled: true },
     });
+    sourceConfigId = config.id;
     const run = await prisma.sourceRun.create({
       data: { sourceConfigId: config.id, status: "RUNNING" },
     });
+    sourceRunId = run.id;
     const rawRecord = await prisma.rawRecord.create({
       data: {
         sourceRunId: run.id,
@@ -49,6 +54,50 @@ describe("TenderProcessorService", () => {
   });
 
   afterAll(async () => {
+    // Clean up test data in FK-safe order (child before parent)
+    if (tenderId) {
+      // Delete outboxEvent rows for this tender
+      await prisma.outboxEvent.deleteMany({
+        where: { aggregateId: tenderId },
+      });
+
+      // Delete tenderVersion rows for this tender
+      await prisma.tenderVersion.deleteMany({
+        where: { tenderId },
+      });
+
+      // Delete tenderNotice rows for this tender
+      await prisma.tenderNotice.deleteMany({
+        where: { tenderId },
+      });
+
+      // Delete tender
+      await prisma.tender.delete({
+        where: { id: tenderId },
+      });
+    }
+
+    // Delete rawRecord
+    if (rawRecordId) {
+      await prisma.rawRecord.delete({
+        where: { id: rawRecordId },
+      });
+    }
+
+    // Delete sourceRun
+    if (sourceRunId) {
+      await prisma.sourceRun.delete({
+        where: { id: sourceRunId },
+      });
+    }
+
+    // Delete sourceConfig
+    if (sourceConfigId) {
+      await prisma.sourceConfig.delete({
+        where: { id: sourceConfigId },
+      });
+    }
+
     await prisma.onModuleDestroy();
   });
 
@@ -72,6 +121,9 @@ describe("TenderProcessorService", () => {
       sourceUrl: "https://www.find-tender.service.gov.uk/notice/notice-processor-1",
       parsed: baseParsed,
     });
+
+    // Capture tenderId for cleanup in afterAll
+    tenderId = result.tenderId;
 
     expect(result.created).toBe(true);
 
