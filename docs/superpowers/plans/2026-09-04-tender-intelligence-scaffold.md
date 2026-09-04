@@ -1,5 +1,11 @@
 # Tender Intelligence Scaffold Implementation Plan
 
+> **SUPERSEDED:** Built against the Python/FastAPI design, which was
+> superseded after a more detailed technical spec surfaced. No code was
+> written against this plan. See
+> `docs/superpowers/plans/2026-09-04-tender-intelligence-scaffold-v2.md`
+> for the current plan (TypeScript/NestJS).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Stand up the Tender Intelligence monorepo with a real, working

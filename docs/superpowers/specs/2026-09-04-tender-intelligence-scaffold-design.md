@@ -1,7 +1,14 @@
 # Tender Intelligence — Project Scaffold Design
 
 Date: 2026-09-04
-Status: Approved
+Status: **Superseded** by
+[2026-09-04-tender-intelligence-scaffold-v2-design.md](2026-09-04-tender-intelligence-scaffold-v2-design.md).
+A more detailed technical spec
+(`tender-intelligence-technical-spec-th.md`) surfaced after this design
+was approved; it specifies a different stack (TypeScript/NestJS instead
+of Python/FastAPI) and a different architecture (event/outbox-driven,
+versioned canonical tenders). No code was written against this version,
+so it's kept only for history. See the v2 doc for the current design.
 
 ## Context
 
