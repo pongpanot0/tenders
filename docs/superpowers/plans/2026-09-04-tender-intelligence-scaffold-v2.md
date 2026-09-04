@@ -2415,7 +2415,348 @@ git commit -m "feat(api): add GET /v1/tenders with cursor pagination"
 
 ---
 
-### Task 14: Frontend scaffold with tender list page
+### Task 14: Frontend scaffold with tender list page — SKIPPED
+
+**Skipped by request:** the user is supplying their own frontend
+mockup. `apps/web` is not created by this plan. Task 15 below is
+adjusted accordingly (no `web` Docker service, no web Dockerfile). If a
+frontend is scaffolded later, it should consume `GET /v1/tenders` per
+the response envelope documented in Task 13's Interfaces section.
+
+<details>
+<summary>Original task content (not executed)</summary>
+
+**Files:**
+- Create: `apps/web/package.json`
+- Create: `apps/web/tsconfig.json`
+- Create: `apps/web/next.config.mjs`
+- Create: `apps/web/tailwind.config.ts`
+- Create: `apps/web/postcss.config.mjs`
+- Create: `apps/web/vitest.config.ts`
+- Create: `apps/web/vitest.setup.ts`
+- Create: `apps/web/app/globals.css`
+- Create: `apps/web/app/layout.tsx`
+- Create: `apps/web/app/page.tsx`
+- Create: `apps/web/app/tenders/page.tsx`
+- Create: `apps/web/lib/api.ts`
+- Create: `apps/web/components/TenderTable.tsx`
+- Create: `apps/web/components/TenderTable.test.tsx`
+
+**Interfaces:**
+- Produces: `TenderListItem` interface and `fetchTenders(): Promise<TenderListItem[]>` (`apps/web/lib/api.ts`, unwrapping the `{ data, page, meta }` envelope); `TenderTable` component.
+
+- [ ] **Step 1: Create package config**
+
+Create `apps/web/package.json`:
+
+```json
+{
+  "name": "@tender-intel/web",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "next": "^14.2.15",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.2",
+    "@testing-library/react": "^16.0.1",
+    "@types/node": "^22.7.5",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.2",
+    "autoprefixer": "^10.4.20",
+    "jsdom": "^25.0.1",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.4"
+  }
+}
+```
+
+Create `apps/web/tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["dom", "dom.iterable", "ES2022"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [{ "name": "next" }],
+    "paths": { "@/*": ["./*"] }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
+}
+```
+
+Create `apps/web/next.config.mjs`:
+
+```js
+/** @type {import('next').NextConfig} */
+const nextConfig = {};
+
+export default nextConfig;
+```
+
+Create `apps/web/tailwind.config.ts`:
+
+```ts
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
+  theme: { extend: {} },
+  plugins: [],
+};
+
+export default config;
+```
+
+Create `apps/web/postcss.config.mjs`:
+
+```js
+export default {
+  plugins: { tailwindcss: {}, autoprefixer: {} },
+};
+```
+
+Create `apps/web/vitest.config.ts`:
+
+```ts
+import path from "node:path";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  plugins: [react()],
+  test: { environment: "jsdom", setupFiles: ["./vitest.setup.ts"] },
+  resolve: { alias: { "@": path.resolve(__dirname, ".") } },
+});
+```
+
+Create `apps/web/vitest.setup.ts`:
+
+```ts
+import "@testing-library/jest-dom/vitest";
+```
+
+- [ ] **Step 2: Write the failing test**
+
+Create `apps/web/lib/api.ts` (types only for now, so the test file type-checks):
+
+```ts
+export interface TenderListItem {
+  id: string;
+  title: string;
+  buyerName: string;
+  countryCode: string | null;
+  publishedAt: string;
+  deadlineAt: string | null;
+}
+```
+
+Create `apps/web/components/TenderTable.test.tsx`:
+
+```tsx
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import type { TenderListItem } from "@/lib/api";
+import { TenderTable } from "./TenderTable";
+
+const sampleTender: TenderListItem = {
+  id: "ten_abc123",
+  title: "Case management software",
+  buyerName: "Example Council",
+  countryCode: "GB",
+  publishedAt: "2026-09-01T00:00:00Z",
+  deadlineAt: "2026-09-30T23:59:59Z",
+};
+
+describe("TenderTable", () => {
+  it("renders a row per tender", () => {
+    render(<TenderTable tenders={[sampleTender]} />);
+    expect(screen.getByText("Case management software")).toBeInTheDocument();
+    expect(screen.getByText("Example Council")).toBeInTheDocument();
+  });
+
+  it("shows an empty state when there are no tenders", () => {
+    render(<TenderTable tenders={[]} />);
+    expect(screen.getByText("No tenders found.")).toBeInTheDocument();
+  });
+});
+```
+
+- [ ] **Step 3: Run test to verify it fails**
+
+Run: `pnpm install && pnpm --filter @tender-intel/web test`
+Expected: FAIL — `./TenderTable` doesn't exist.
+
+- [ ] **Step 4: Implement `components/TenderTable.tsx`**
+
+```tsx
+import type { TenderListItem } from "@/lib/api";
+
+export function TenderTable({ tenders }: { tenders: TenderListItem[] }) {
+  if (tenders.length === 0) {
+    return <p className="text-gray-500">No tenders found.</p>;
+  }
+
+  return (
+    <table className="w-full border-collapse text-left text-sm">
+      <thead>
+        <tr className="border-b">
+          <th className="py-2 pr-4">Title</th>
+          <th className="py-2 pr-4">Buyer</th>
+          <th className="py-2 pr-4">Country</th>
+          <th className="py-2 pr-4">Deadline</th>
+        </tr>
+      </thead>
+      <tbody>
+        {tenders.map((tender) => (
+          <tr key={tender.id} className="border-b">
+            <td className="py-2 pr-4">{tender.title}</td>
+            <td className="py-2 pr-4">{tender.buyerName}</td>
+            <td className="py-2 pr-4">{tender.countryCode ?? "—"}</td>
+            <td className="py-2 pr-4">
+              {tender.deadlineAt ? new Date(tender.deadlineAt).toLocaleDateString() : "—"}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+```
+
+- [ ] **Step 5: Run test to verify it passes**
+
+Run: `pnpm --filter @tender-intel/web test`
+Expected: PASS (2 tests).
+
+- [ ] **Step 6: Implement `lib/api.ts` fetch function**
+
+Append to `apps/web/lib/api.ts` (the `TenderListItem` interface from Step 2 stays):
+
+```ts
+interface TenderListEnvelope {
+  data: TenderListItem[];
+  page: { nextCursor: string | null; hasMore: boolean };
+  meta: { requestId: string };
+}
+
+const API_BASE_URL = process.env.API_BASE_URL ?? "http://localhost:3001";
+
+export async function fetchTenders(): Promise<TenderListItem[]> {
+  const response = await fetch(`${API_BASE_URL}/v1/tenders`, { cache: "no-store" });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch tenders: ${response.status}`);
+  }
+
+  const envelope = (await response.json()) as TenderListEnvelope;
+  return envelope.data;
+}
+```
+
+- [ ] **Step 7: Implement the pages and layout**
+
+Create `apps/web/app/globals.css`:
+
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+Create `apps/web/app/layout.tsx`:
+
+```tsx
+import type { ReactNode } from "react";
+import "./globals.css";
+
+export const metadata = { title: "Tender Intelligence" };
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+  return (
+    <html lang="en">
+      <body className="bg-white text-gray-900">{children}</body>
+    </html>
+  );
+}
+```
+
+Create `apps/web/app/page.tsx`:
+
+```tsx
+import Link from "next/link";
+
+export default function HomePage() {
+  return (
+    <main className="p-8">
+      <h1 className="text-2xl font-semibold">Tender Intelligence</h1>
+      <p className="mt-2">
+        <Link className="text-blue-600 underline" href="/tenders">
+          View tenders
+        </Link>
+      </p>
+    </main>
+  );
+}
+```
+
+Create `apps/web/app/tenders/page.tsx`:
+
+```tsx
+import { TenderTable } from "@/components/TenderTable";
+import { fetchTenders } from "@/lib/api";
+
+export default async function TendersPage() {
+  const tenders = await fetchTenders();
+
+  return (
+    <main className="p-8">
+      <h1 className="text-2xl font-semibold">Tenders</h1>
+      <div className="mt-4">
+        <TenderTable tenders={tenders} />
+      </div>
+    </main>
+  );
+}
+```
+
+- [ ] **Step 8: Type-check the frontend**
+
+Run: `pnpm --filter @tender-intel/web typecheck`
+Expected: no type errors.
+
+- [ ] **Step 9: Commit**
+
+```bash
+git add apps/web
+git commit -m "feat(web): scaffold Next.js app with tender list page"
+```
+
+</details>
 
 **Files:**
 - Create: `apps/web/package.json`
@@ -2751,17 +3092,22 @@ git commit -m "feat(web): scaffold Next.js app with tender list page"
 
 ### Task 15: Worker entrypoint, full Docker Compose wiring, and README
 
+**Note:** `apps/web` doesn't exist in this plan (Task 14 skipped — user
+is supplying their own frontend). This task wires only `api` and
+`worker` into Docker Compose, not `web`. Whatever frontend gets added
+later should point at `GET /v1/tenders` (documented in Task 13) and can
+add its own service/Dockerfile to `docker-compose.yml` at that point.
+
 **Files:**
 - Create: `apps/api/src/worker.ts`
 - Create: `apps/api/src/worker.module.ts`
 - Create: `apps/api/Dockerfile`
-- Create: `apps/web/Dockerfile`
 - Modify: `docker-compose.yml`
 - Modify: `README.md`
 
 **Interfaces:**
 - Consumes: `IngestionModule`, `ParsingModule`, `OutboxModule` (Tasks 8, 11, 12).
-- Produces: a standalone worker process (`node dist/worker.js`) that starts the BullMQ consumer and polls the outbox relay every 5 seconds; a runnable `docker compose up --build` stack.
+- Produces: a standalone worker process (`node dist/worker.js`) that starts the BullMQ consumer and polls the outbox relay every 5 seconds; a runnable `docker compose up --build` stack (`postgres`, `redis`, `minio`, `api`, `worker`).
 
 - [ ] **Step 1: Implement `src/worker.module.ts`**
 
@@ -2838,21 +3184,7 @@ WORKDIR /repo/apps/api
 CMD ["node", "dist/main.js"]
 ```
 
-- [ ] **Step 5: Create `apps/web/Dockerfile`**
-
-```dockerfile
-FROM node:20-slim
-
-WORKDIR /repo
-
-COPY . .
-RUN corepack enable && pnpm install --frozen-lockfile && pnpm --filter @tender-intel/web build
-
-WORKDIR /repo/apps/web
-CMD ["pnpm", "start"]
-```
-
-- [ ] **Step 6: Update `docker-compose.yml`** to add `api`, `worker`, `web` services alongside `postgres`, `redis`, `minio`:
+- [ ] **Step 5: Update `docker-compose.yml`** to add `api` and `worker` services alongside `postgres`, `redis`, `minio` (no `web` service — Task 14 skipped):
 
 ```yaml
 services:
@@ -2925,28 +3257,17 @@ services:
       - redis
       - minio
 
-  web:
-    build:
-      context: .
-      dockerfile: apps/web/Dockerfile
-    environment:
-      API_BASE_URL: http://api:3001
-    ports:
-      - "3000:3000"
-    depends_on:
-      - api
-
 volumes:
   postgres_data:
   minio_data:
 ```
 
-- [ ] **Step 7: Verify the compose file**
+- [ ] **Step 6: Verify the compose file**
 
 Run: `docker compose config`
-Expected: resolved config includes `postgres`, `redis`, `minio`, `api`, `worker`, `web` with no errors.
+Expected: resolved config includes `postgres`, `redis`, `minio`, `api`, `worker` with no errors.
 
-- [ ] **Step 8: Write the full `README.md`**
+- [ ] **Step 7: Write the full `README.md`**
 
 ```markdown
 # Tender Intelligence
@@ -2958,8 +3279,12 @@ for the scaffold design.
 ## Structure
 
 - `apps/api` — NestJS API + BullMQ worker (ingestion, parsing, versioning, outbox, REST API)
-- `apps/web` — Next.js frontend
 - `packages/schema` — shared canonical tender schema (JSON Schema + TS types)
+
+No frontend is scaffolded here — a separate mockup/frontend consumes
+`GET /v1/tenders` (see its response shape in
+`docs/superpowers/plans/2026-09-04-tender-intelligence-scaffold-v2.md`,
+Task 13).
 
 ## Local development
 
@@ -2974,7 +3299,6 @@ docker compose up --build
 \`\`\`
 
 - API: http://localhost:3001
-- Web: http://localhost:3000
 - MinIO console: http://localhost:9001 (tender / tender12345)
 
 Run migrations once against the running Postgres container:
@@ -3005,26 +3329,18 @@ pnpm install
 pnpm test
 \`\`\`
 
-### Run frontend locally
-
-\`\`\`bash
-pnpm install
-pnpm --filter @tender-intel/web dev
-\`\`\`
-
 ## What's implemented
 
 One working end-to-end slice, event-driven per the technical spec:
 UK Find a Tender → object storage → raw_records → queued parse job →
 normalize/version/dedup-by-notice → transactional outbox → relay →
-`GET /v1/tenders` → web table. Auth, matching, alerts, billing, and
-every source beyond UK Find a Tender are out of scope — see the design
-doc.
+`GET /v1/tenders`. No frontend, auth, matching, alerts, or billing —
+see the design doc's "Out of Scope" section.
 ```
 
-- [ ] **Step 9: Commit**
+- [ ] **Step 8: Commit**
 
 ```bash
-git add apps/api/src/worker.ts apps/api/src/worker.module.ts apps/api/Dockerfile apps/web/Dockerfile docker-compose.yml README.md apps/api/package.json
-git commit -m "feat: add worker entrypoint and wire full docker-compose stack"
+git add apps/api/src/worker.ts apps/api/src/worker.module.ts apps/api/Dockerfile docker-compose.yml README.md apps/api/package.json
+git commit -m "feat: add worker entrypoint and wire docker-compose stack (api + worker)"
 ```
