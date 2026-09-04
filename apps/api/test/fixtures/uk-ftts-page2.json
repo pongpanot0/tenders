@@ -1,0 +1,22 @@
+{
+  "releases": [
+    {
+      "ocid": "ocds-abc-0002",
+      "id": "ocds-abc-0002-tender",
+      "date": "2026-09-02T00:00:00Z",
+      "tender": {
+        "id": "notice-2",
+        "title": "Cloud migration services",
+        "description": "Migrate legacy systems to the cloud.",
+        "value": { "amount": 250000, "currency": "GBP" },
+        "tenderPeriod": { "endDate": "2026-10-15T23:59:59Z" },
+        "items": [{ "classification": { "scheme": "CPV", "id": "72212000" } }]
+      },
+      "buyer": { "name": "Another Council" },
+      "parties": [
+        { "id": "buyer-1", "roles": ["buyer"], "name": "Another Council", "address": { "countryName": "United Kingdom" } }
+      ]
+    }
+  ],
+  "links": {}
+}
