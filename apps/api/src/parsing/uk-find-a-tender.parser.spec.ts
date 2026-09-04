@@ -24,4 +24,14 @@ describe("parseUkFindATenderRelease", () => {
       cpvCodes: ["72000000"],
     });
   });
+
+  it("throws a clear error when tender.id is missing", () => {
+    const page = JSON.parse(fs.readFileSync(path.join(FIXTURES, "uk-ftts-page1.json"), "utf-8"));
+    const release = JSON.parse(JSON.stringify(page.releases[0]));
+    delete release.tender.id;
+
+    expect(() => parseUkFindATenderRelease(release)).toThrow(
+      "Cannot parse release: missing required field 'tender.id'",
+    );
+  });
 });

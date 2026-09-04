@@ -34,13 +34,23 @@ export function parseUkFindATenderRelease(release: unknown): ParsedTenderFields 
     .filter((item) => item.classification?.scheme === "CPV" && item.classification.id)
     .map((item) => item.classification!.id as string);
 
+  if (!tender.id) {
+    throw new Error("Cannot parse release: missing required field 'tender.id'");
+  }
+  if (!r.date) {
+    throw new Error("Cannot parse release: missing required field 'date'");
+  }
+  if (!tender.title) {
+    throw new Error("Cannot parse release: missing required field 'tender.title'");
+  }
+
   return {
-    sourceExternalId: tender.id ?? "",
-    title: tender.title ?? "",
+    sourceExternalId: tender.id,
+    title: tender.title,
     description: tender.description ?? null,
     buyerName: r.buyer?.name ?? "",
     countryName: buyerParty?.address?.countryName ?? null,
-    publishedAtRaw: r.date ?? "",
+    publishedAtRaw: r.date,
     deadlineAtRaw: tender.tenderPeriod?.endDate ?? null,
     budgetAmount: tender.value?.amount ?? null,
     currencyRaw: tender.value?.currency ?? null,
