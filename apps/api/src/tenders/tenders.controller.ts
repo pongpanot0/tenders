@@ -1,7 +1,9 @@
-import { Controller, Get, Query } from "@nestjs/common";
+import { BadRequestException, Controller, Get, Query } from "@nestjs/common";
 import { randomUUID } from "node:crypto";
 import { PrismaService } from "../prisma/prisma.service";
 import { decodeCursor, encodeCursor } from "./cursor.util";
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 interface TenderListItem {
   id: string;
@@ -24,8 +26,14 @@ export class TendersController {
 
   @Get()
   async list(@Query() query: { limit?: number; cursor?: string }): Promise<TenderListResponse> {
-    const limit = Math.min(Number(query.limit) || 25, 100);
-    const cursorId = query.cursor ? decodeCursor(query.cursor) : undefined;
+    const limit = Math.max(1, Math.min(Number(query.limit) || 25, 100));
+    let cursorId: string | undefined;
+    if (query.cursor) {
+      cursorId = decodeCursor(query.cursor);
+      if (!UUID_RE.test(cursorId)) {
+        throw new BadRequestException("Invalid cursor");
+      }
+    }
 
     const tenders = await this.prisma.tender.findMany({
       take: limit + 1,

@@ -1,5 +1,6 @@
 import { Test } from "@nestjs/testing";
 import { ConfigModule } from "@nestjs/config";
+import { BadRequestException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { TendersController } from "./tenders.controller";
 import { validateEnv } from "../config/env.validation";
@@ -64,5 +65,14 @@ describe("TendersController", () => {
     expect(response.data.some((t) => t.id === tender.id)).toBe(true);
     expect(response.meta.requestId).toBeDefined();
     expect(response.page).toHaveProperty("hasMore");
+  });
+
+  it("clamps a negative or zero limit to a sane minimum instead of an invalid Prisma take", async () => {
+    await expect(controller.list({ limit: -5 })).resolves.toBeDefined();
+    await expect(controller.list({ limit: 0 })).resolves.toBeDefined();
+  });
+
+  it("rejects a malformed cursor with a 400 instead of a 500", async () => {
+    await expect(controller.list({ cursor: "not-a-real-cursor" })).rejects.toThrow(BadRequestException);
   });
 });
