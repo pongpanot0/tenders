@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model SourceRegistry {
+  id           String   @id
+  name         String
+  countryCode  String   @map("country_code")
+  accessMethod String   @map("access_method")
+  policyStatus String   @map("policy_status")
+  adapterKey   String   @map("adapter_key")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  configs SourceConfig[]
+
+  @@map("source_registry")
+}
+
+model SourceConfig {
+  id          String   @id @default(uuid())
+  sourceId    String   @map("source_id")
+  environment String
+  schedule    String?
+  queryJson   Json?    @map("query_json")
+  enabled     Boolean  @default(true)
+
+  source SourceRegistry @relation(fields: [sourceId], references: [id])
+  runs   SourceRun[]
+
+  @@map("source_configs")
+}
+
+model SourceRun {
+  id            String    @id @default(uuid())
+  sourceConfigId String   @map("source_config_id")
+  status        String
+  cursorBefore  String?   @map("cursor_before")
+  cursorAfter   String?   @map("cursor_after")
+  itemsFetched  Int       @default(0) @map("items_fetched")
+  startedAt     DateTime  @default(now()) @map("started_at")
+  finishedAt    DateTime? @map("finished_at")
+
+  sourceConfig SourceConfig @relation(fields: [sourceConfigId], references: [id])
+  rawRecords   RawRecord[]
+
+  @@map("source_runs")
+}
+
+model RawRecord {
+  id           String   @id @default(uuid())
+  sourceRunId  String   @map("source_run_id")
+  externalId   String   @map("external_id")
+  payloadUri   String   @map("payload_uri")
+  payloadHash  String   @map("payload_hash")
+  receivedAt   DateTime @default(now()) @map("received_at")
+
+  sourceRun      SourceRun       @relation(fields: [sourceRunId], references: [id])
+  tenderNotices  TenderNotice[]
+
+  @@unique([sourceRunId, externalId, payloadHash], name: "raw_records_source_external_hash_uq")
+  @@map("raw_records")
+}
+
+model Tender {
+  id               String   @id @default(uuid())
+  canonicalKey     String   @unique @map("canonical_key")
+  sourceId         String   @map("source_id")
+  currentVersionId String?  @unique @map("current_version_id")
+  status           String   @default("open")
+  firstSeenAt      DateTime @default(now()) @map("first_seen_at")
+
+  versions TenderVersion[] @relation("TenderToVersions")
+  notices  TenderNotice[]
+
+  @@map("tenders")
+}
+
+model TenderVersion {
+  id            String   @id @default(uuid())
+  tenderId      String   @map("tender_id")
+  contentHash   String   @map("content_hash")
+  normalizedJson Json    @map("normalized_json")
+  publishedAt   DateTime @map("published_at")
+  deadlineAt    DateTime? @map("deadline_at")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  tender Tender @relation("TenderToVersions", fields: [tenderId], references: [id])
+
+  @@unique([tenderId, contentHash], name: "tender_versions_tender_hash_uq")
+  @@index([deadlineAt], name: "tender_versions_deadline_open_idx")
+  @@map("tender_versions")
+}
+
+model TenderNotice {
+  id               String  @id @default(uuid())
+  tenderId         String  @map("tender_id")
+  sourceId         String  @map("source_id")
+  sourceExternalId String  @map("source_external_id")
+  noticeType       String? @map("notice_type")
+  sourceUrl        String  @map("source_url")
+  rawRecordId      String  @map("raw_record_id")
+
+  tender    Tender    @relation(fields: [tenderId], references: [id])
+  rawRecord RawRecord @relation(fields: [rawRecordId], references: [id])
+
+  @@unique([sourceId, sourceExternalId], name: "tender_notices_source_external_uq")
+  @@map("tender_notices")
+}
+
+model OutboxEvent {
+  id            String    @id @default(uuid())
+  eventType     String    @map("event_type")
+  aggregateType String    @map("aggregate_type")
+  aggregateId   String    @map("aggregate_id")
+  payloadJson   Json      @map("payload_json")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  publishedAt   DateTime? @map("published_at")
+
+  @@map("outbox_events")
+}

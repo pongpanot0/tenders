@@ -1,0 +1,63 @@
+{
+  "$id": "https://tender-intel/schema/tender.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CanonicalTender",
+  "type": "object",
+  "required": ["id", "source", "externalReferences", "title", "status", "publishedAt", "buyer", "sourceUrl", "provenance"],
+  "properties": {
+    "id": { "type": "string" },
+    "source": {
+      "type": "object",
+      "required": ["id", "name", "countryCode"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "countryCode": { "type": "string" }
+      }
+    },
+    "externalReferences": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "value"],
+        "properties": { "type": { "type": "string" }, "value": { "type": "string" } }
+      }
+    },
+    "title": { "type": "string" },
+    "summary": { "type": ["string", "null"] },
+    "status": { "type": "string", "enum": ["open", "closed", "expired", "cancelled"] },
+    "noticeType": { "type": ["string", "null"] },
+    "publishedAt": { "type": "string", "format": "date-time" },
+    "deadlineAt": { "type": ["string", "null"], "format": "date-time" },
+    "buyer": {
+      "type": "object",
+      "required": ["name", "countryCode"],
+      "properties": {
+        "name": { "type": "string" },
+        "countryCode": { "type": "string" },
+        "region": { "type": ["string", "null"] }
+      }
+    },
+    "value": {
+      "type": ["object", "null"],
+      "properties": {
+        "min": { "type": ["number", "null"] },
+        "max": { "type": ["number", "null"] },
+        "currency": { "type": ["string", "null"] },
+        "kind": { "type": ["string", "null"] }
+      }
+    },
+    "cpvCodes": { "type": "array", "items": { "type": "string" } },
+    "sourceUrl": { "type": "string" },
+    "provenance": {
+      "type": "object",
+      "required": ["version", "contentHash", "lastSourceSeenAt"],
+      "properties": {
+        "version": { "type": "integer" },
+        "contentHash": { "type": "string" },
+        "lastSourceSeenAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "additionalProperties": true
+}
