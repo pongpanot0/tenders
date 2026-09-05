@@ -1,4 +1,4 @@
-import { MockTender } from '@/lib/mock-data';
+import { Tender } from '@/lib/api';
 
 function formatDeadlineDate(deadline: string): string {
   const date = new Date(deadline);
@@ -16,15 +16,6 @@ function synthesizePublishedDate(deadline: string): string {
   return `${day} ${month}`;
 }
 
-function getScoreBandColor(
-  score: number
-): 'strong' | 'worth-reviewing' | 'low-priority' | 'neutral' {
-  if (score >= 80) return 'strong';
-  if (score >= 60) return 'worth-reviewing';
-  if (score >= 40) return 'low-priority';
-  return 'neutral';
-}
-
 function getScoreBadgeStyles(band: string): { bg: string; text: string } {
   switch (band) {
     case 'strong':
@@ -38,13 +29,13 @@ function getScoreBadgeStyles(band: string): { bg: string; text: string } {
   }
 }
 
-function formatValue(value: number | null, currency: string): string {
+function formatValue(value: number | null, currency: string | null): string {
   if (value === null) return 'Not stated';
-  return `${currency} ${value.toLocaleString()}`;
+  return `${currency ?? ''} ${value.toLocaleString()}`.trim();
 }
 
 interface ExploreTableProps {
-  tenders: MockTender[];
+  tenders: Tender[];
   showFitColumn: boolean;
 }
 
@@ -69,8 +60,8 @@ export default function ExploreTable({
         const deadlineDate = formatDeadlineDate(tender.deadline);
         const publishedDate = synthesizePublishedDate(tender.deadline);
         const valueDisplay = formatValue(tender.estimatedValue, tender.currency);
-        const scoreBand = getScoreBandColor(tender.score);
         const { bg, text } = getScoreBadgeStyles(tender.matchBand);
+        const fitDisplay = tender.score === null ? 'Analysis limited' : tender.score;
 
         return (
           <div
@@ -105,9 +96,9 @@ export default function ExploreTable({
             {showFitColumn && (
               <div className="text-center">
                 <span
-                  className={`inline-block px-3 py-1 rounded-sm text-xs font-semibold ${bg} ${text}`}
+                  className={`inline-block px-3 py-1 rounded-sm text-xs font-semibold whitespace-nowrap ${bg} ${text}`}
                 >
-                  {tender.score}
+                  {fitDisplay}
                 </span>
               </div>
             )}

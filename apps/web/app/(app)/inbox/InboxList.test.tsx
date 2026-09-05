@@ -1,72 +1,127 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import InboxList from './InboxList';
-import { mockTenders } from '@/lib/mock-data';
+import { Tender } from '@/lib/api';
+
+const { fetchTenders } = vi.hoisted(() => ({ fetchTenders: vi.fn() }));
+
+vi.mock('@/lib/api', async () => {
+  const actual = await vi.importActual<typeof import('@/lib/api')>('@/lib/api');
+  return { ...actual, fetchTenders };
+});
+
+const fixtureTenders: Tender[] = [
+  {
+    id: 'tender-001',
+    title: 'Cloud case management',
+    buyerName: 'Ministry of Health',
+    country: 'Singapore',
+    deadline: '2026-09-28',
+    estimatedValue: 200000,
+    currency: 'SGD',
+    score: 91,
+    matchBand: 'strong',
+    status: 'open',
+    fitTags: ['React', 'AWS'],
+    hasRisk: false,
+    source: 'govtender.sg',
+  },
+  {
+    id: 'tender-002',
+    title: 'Mobile service platform',
+    buyerName: 'State Bank',
+    country: 'Singapore',
+    deadline: '2026-10-02',
+    estimatedValue: 100000,
+    currency: 'SGD',
+    score: 84,
+    matchBand: 'strong',
+    status: 'open',
+    fitTags: ['React'],
+    hasRisk: false,
+    source: 'govtender.sg',
+  },
+  {
+    id: 'tender-003',
+    title: 'Data integration support',
+    buyerName: 'Transportation Authority',
+    country: 'Singapore',
+    deadline: '2026-09-18',
+    estimatedValue: 75000,
+    currency: 'SGD',
+    score: 73,
+    matchBand: 'worth-reviewing',
+    status: 'deadline-soon',
+    fitTags: ['Node.js'],
+    hasRisk: true,
+    source: 'govtender.sg',
+  },
+];
+
+beforeEach(() => {
+  fetchTenders.mockReset();
+  fetchTenders.mockResolvedValue(fixtureTenders);
+});
 
 describe('InboxList', () => {
-  it('renders all mock tenders by default', () => {
+  it('renders all tenders by default', async () => {
     render(<InboxList />);
 
-    // Check that the page title is present
     expect(screen.getByText('Opportunities')).toBeInTheDocument();
 
-    // Check that at least the first few tender titles are visible
-    const firstTender = mockTenders[0];
-    expect(screen.getAllByText(firstTender.title).length).toBeGreaterThan(0);
-
-    const secondTender = mockTenders[1];
-    expect(screen.getAllByText(secondTender.title).length).toBeGreaterThan(0);
+    await waitFor(() => {
+      expect(screen.getAllByText(fixtureTenders[0].title).length).toBeGreaterThan(0);
+    });
+    expect(screen.getAllByText(fixtureTenders[1].title).length).toBeGreaterThan(0);
   });
 
-  it('shows the correct count of open matches', () => {
+  it('shows the correct count of open matches', async () => {
     render(<InboxList />);
 
-    const countText = screen.getByText(
-      new RegExp(`${mockTenders.length} open match`)
-    );
-    expect(countText).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByText(new RegExp(`${fixtureTenders.length} open match`))
+      ).toBeInTheDocument();
+    });
   });
 
-  it('filters tenders by search text in title', () => {
+  it('filters tenders by search text in title', async () => {
     render(<InboxList />);
+    await waitFor(() => screen.getAllByText('Cloud case management'));
 
     const searchInput = screen.getByPlaceholderText(
       'Search by title, buyer...'
     ) as HTMLInputElement;
 
-    // Search for "Cloud" - should find the first tender
     fireEvent.change(searchInput, { target: { value: 'Cloud' } });
 
     const cloudTenders = screen.queryAllByText('Cloud case management');
     expect(cloudTenders.length).toBeGreaterThan(0);
-    // Second tender should not be visible
     expect(screen.queryByText('Mobile service platform')).not.toBeInTheDocument();
   });
 
-  it('filters tenders by search text in buyer name', () => {
+  it('filters tenders by search text in buyer name', async () => {
     render(<InboxList />);
+    await waitFor(() => screen.getAllByText('Cloud case management'));
 
     const searchInput = screen.getByPlaceholderText(
       'Search by title, buyer...'
     ) as HTMLInputElement;
 
-    // Search for "Ministry" - should find the first tender
     fireEvent.change(searchInput, { target: { value: 'Ministry' } });
 
-    const cloudTenders = screen.queryAllByText('Cloud case management');
-    expect(cloudTenders.length).toBeGreaterThan(0);
-    const ministryTenders = screen.queryAllByText(/Ministry of Health/);
-    expect(ministryTenders.length).toBeGreaterThan(0);
+    expect(screen.queryAllByText('Cloud case management').length).toBeGreaterThan(0);
+    expect(screen.queryAllByText(/Ministry of Health/).length).toBeGreaterThan(0);
   });
 
-  it('displays empty state when search returns no results', () => {
+  it('displays empty state when search returns no results', async () => {
     render(<InboxList />);
+    await waitFor(() => screen.getAllByText('Cloud case management'));
 
     const searchInput = screen.getByPlaceholderText(
       'Search by title, buyer...'
     ) as HTMLInputElement;
 
-    // Search for something that doesn't exist
     fireEvent.change(searchInput, { target: { value: 'NonexistentTender' } });
 
     expect(
@@ -74,89 +129,98 @@ describe('InboxList', () => {
     ).toBeInTheDocument();
   });
 
-  it('clears filters when "Clear filters" button is clicked', () => {
+  it('clears filters when "Clear filters" button is clicked', async () => {
     render(<InboxList />);
+    await waitFor(() => screen.getAllByText('Cloud case management'));
 
     const searchInput = screen.getByPlaceholderText(
       'Search by title, buyer...'
     ) as HTMLInputElement;
 
-    // Perform a search
     fireEvent.change(searchInput, { target: { value: 'NonexistentTender' } });
-
     expect(
       screen.getByText('No open opportunities match these filters.')
     ).toBeInTheDocument();
 
-    // Click clear filters button - get the one in the empty state, not the reset button
     const clearButtons = screen.getAllByText('Clear filters');
     fireEvent.click(clearButtons[0]);
 
-    // Search should be cleared and all tenders should be visible
     expect(searchInput.value).toBe('');
-    const cloudTenders = screen.queryAllByText('Cloud case management');
-    expect(cloudTenders.length).toBeGreaterThan(0);
+    expect(screen.queryAllByText('Cloud case management').length).toBeGreaterThan(0);
   });
 
-  it('selects a tender and shows its detail panel', () => {
+  it('selects a tender and shows its detail panel', async () => {
     render(<InboxList />);
+    await waitFor(() => screen.getAllByText(fixtureTenders[0].title));
 
-    // Find the first tender row (the one with the title in the list area)
-    const firstTenderTitles = screen.getAllByText(mockTenders[0].title);
-    // The first one should be in the list, the second in the detail panel (if selected)
-    const firstTenderRow = firstTenderTitles[0].closest('div');
-
-    // Click the first tender to select it
+    const firstTenderRow = screen.getAllByText(fixtureTenders[0].title)[0].closest('div');
     fireEvent.click(firstTenderRow!);
 
-    // The detail panel should show the tender's information
-    expect(screen.getByText(mockTenders[0].buyerName)).toBeInTheDocument();
+    expect(screen.getByText(fixtureTenders[0].buyerName)).toBeInTheDocument();
     expect(screen.getByText(/Strong match/)).toBeInTheDocument();
   });
 
-  it('updates detail panel when selecting a different tender', () => {
+  it('updates detail panel when selecting a different tender', async () => {
     render(<InboxList />);
+    await waitFor(() => screen.getAllByText(fixtureTenders[1].title));
 
-    // Click the second tender (get all occurrences and pick the one in the list)
-    const secondTenderTitles = screen.getAllByText(mockTenders[1].title);
-    const secondTenderRow = secondTenderTitles[0].closest('div');
+    const secondTenderRow = screen.getAllByText(fixtureTenders[1].title)[0].closest('div');
     fireEvent.click(secondTenderRow!);
 
-    // The detail panel should show the second tender's information
-    expect(screen.getByText(mockTenders[1].buyerName)).toBeInTheDocument();
-    expect(screen.getAllByText(mockTenders[1].title).length).toBeGreaterThan(0);
+    expect(screen.getByText(fixtureTenders[1].buyerName)).toBeInTheDocument();
   });
 
-  it('displays fit tags for tenders', () => {
+  it('displays fit tags for tenders', async () => {
     render(<InboxList />);
-
-    const firstTender = mockTenders[0];
-    // The first tender has fitTags: ['React', 'AWS']
-    firstTender.fitTags.forEach((tag) => {
-      const tags = screen.getAllByText(tag);
-      expect(tags.length).toBeGreaterThan(0);
+    await waitFor(() => {
+      fixtureTenders[0].fitTags.forEach((tag) => {
+        expect(screen.getAllByText(tag).length).toBeGreaterThan(0);
+      });
     });
   });
 
-  it('displays risk icon only for tenders with hasRisk=true', () => {
+  it('displays risk icon only for tenders with hasRisk=true', async () => {
     render(<InboxList />);
 
-    // Find tenders with risk
-    const tendersWithRisk = mockTenders.filter((t) => t.hasRisk);
-
-    // There should be at least one tender with risk based on mock data
-    expect(tendersWithRisk.length).toBeGreaterThan(0);
-
-    // The risk icon should be present in the rendered component
-    const riskButtons = screen.getAllByTitle('Risk');
-    expect(riskButtons.length).toBe(tendersWithRisk.length);
+    await waitFor(() => {
+      const tendersWithRisk = fixtureTenders.filter((t) => t.hasRisk);
+      const riskButtons = screen.getAllByTitle('Risk');
+      expect(riskButtons.length).toBe(tendersWithRisk.length);
+    });
   });
 
-  it('displays score badge with correct number', () => {
+  it('displays score badge with correct number', async () => {
     render(<InboxList />);
 
-    mockTenders.slice(0, 3).forEach((tender) => {
-      expect(screen.getByText(tender.score.toString())).toBeInTheDocument();
+    await waitFor(() => {
+      fixtureTenders.forEach((tender) => {
+        expect(screen.getByText(tender.score!.toString())).toBeInTheDocument();
+      });
+    });
+  });
+
+  it('shows "Analysis limited" when score is not available', async () => {
+    fetchTenders.mockResolvedValue([
+      {
+        ...fixtureTenders[0],
+        score: null,
+        matchBand: 'analysis-limited',
+        fitTags: [],
+      },
+    ]);
+    render(<InboxList />);
+
+    await waitFor(() => {
+      expect(screen.getAllByText('Analysis limited').length).toBeGreaterThan(0);
+    });
+  });
+
+  it('shows a retry option when the API call fails', async () => {
+    fetchTenders.mockRejectedValue(new Error('network error'));
+    render(<InboxList />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Could not refresh. Retry.')).toBeInTheDocument();
     });
   });
 });

@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { mockTenders, MockTender } from '@/lib/mock-data';
+import { useState, useMemo, useEffect } from 'react';
+import { fetchTenders, Tender } from '@/lib/api';
 import {
   Heart,
   X,
@@ -22,6 +22,8 @@ function getBandLabel(band: string): string {
       return 'Low priority';
     case 'not-recommended':
       return 'Not recommended';
+    case 'analysis-limited':
+      return 'Analysis limited';
     default:
       return '';
   }
@@ -61,25 +63,40 @@ function formatDeadline(deadline: string): { date: string; daysLeft?: number } {
 
 export default function InboxList() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTenderId, setSelectedTenderId] = useState<string | null>(
-    mockTenders.length > 0 ? mockTenders[0].id : null
-  );
+  const [tenders, setTenders] = useState<Tender[]>([]);
+  const [loadStatus, setLoadStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [selectedTenderId, setSelectedTenderId] = useState<string | null>(null);
+
+  const loadTenders = () => {
+    setLoadStatus('loading');
+    fetchTenders()
+      .then((data) => {
+        setTenders(data);
+        setSelectedTenderId(data.length > 0 ? data[0].id : null);
+        setLoadStatus('ready');
+      })
+      .catch(() => setLoadStatus('error'));
+  };
+
+  useEffect(() => {
+    loadTenders();
+  }, []);
 
   // Filter tenders based on search query
   const filteredTenders = useMemo(() => {
     if (!searchQuery.trim()) {
-      return mockTenders;
+      return tenders;
     }
 
     const query = searchQuery.toLowerCase();
-    return mockTenders.filter(
+    return tenders.filter(
       (tender) =>
         tender.title.toLowerCase().includes(query) ||
         tender.buyerName.toLowerCase().includes(query)
     );
-  }, [searchQuery]);
+  }, [searchQuery, tenders]);
 
-  const selectedTender = mockTenders.find((t) => t.id === selectedTenderId);
+  const selectedTender = tenders.find((t) => t.id === selectedTenderId);
 
   const handleClearFilters = () => {
     setSearchQuery('');
@@ -97,8 +114,9 @@ export default function InboxList() {
             Opportunities
           </h1>
           <p className="text-sm text-ink-muted">
-            {filteredTenders.length} open match
-            {filteredTenders.length !== 1 ? 'es' : ''} · Updated {displayTime}
+            {loadStatus === 'loading'
+              ? 'Loading…'
+              : `${filteredTenders.length} open match${filteredTenders.length !== 1 ? 'es' : ''} · Updated ${displayTime}`}
           </p>
         </div>
 
@@ -134,15 +152,35 @@ export default function InboxList() {
               <Download size={16} />
               Export
             </button>
-            <button className="px-4 py-2 bg-surface-raised border border-rule rounded-md text-sm text-ink hover:border-accent hover:bg-white transition-all flex items-center gap-2">
+            <button
+              onClick={loadTenders}
+              className="px-4 py-2 bg-surface-raised border border-rule rounded-md text-sm text-ink hover:border-accent hover:bg-white transition-all flex items-center gap-2"
+            >
               <RefreshCw size={16} />
               Refresh
             </button>
           </div>
         </div>
 
-        {/* Tender List or Empty State */}
-        {filteredTenders.length === 0 ? (
+        {/* Tender List, Loading, Error, or Empty State */}
+        {loadStatus === 'error' ? (
+          <div className="bg-surface border border-rule rounded-md p-12 text-center">
+            <div className="text-sm text-ink-faint mb-4">
+              Could not refresh. Retry.
+            </div>
+            <button
+              onClick={loadTenders}
+              className="px-4 py-2 bg-surface-raised border border-rule rounded-md text-sm text-ink hover:border-accent hover:bg-white transition-all inline-flex items-center gap-2"
+            >
+              <RefreshCw size={16} />
+              Retry
+            </button>
+          </div>
+        ) : loadStatus === 'loading' ? (
+          <div className="bg-surface border border-rule rounded-md p-12 text-center text-sm text-ink-faint">
+            Loading tenders…
+          </div>
+        ) : filteredTenders.length === 0 ? (
           <div className="bg-surface border border-rule rounded-md p-12 text-center">
             <Inbox
               size={32}
@@ -150,14 +188,18 @@ export default function InboxList() {
               strokeWidth={1.5}
             />
             <div className="text-sm text-ink-faint mb-4">
-              No open opportunities match these filters.
+              {tenders.length === 0
+                ? 'We are building your first matches.'
+                : 'No open opportunities match these filters.'}
             </div>
-            <button
-              onClick={handleClearFilters}
-              className="px-4 py-2 bg-surface-raised border border-rule rounded-md text-sm text-ink hover:border-accent hover:bg-white transition-all"
-            >
-              Clear filters
-            </button>
+            {tenders.length > 0 && (
+              <button
+                onClick={handleClearFilters}
+                className="px-4 py-2 bg-surface-raised border border-rule rounded-md text-sm text-ink hover:border-accent hover:bg-white transition-all"
+              >
+                Clear filters
+              </button>
+            )}
           </div>
         ) : (
           <div className="bg-surface border border-rule rounded-md overflow-hidden">
@@ -199,12 +241,11 @@ function TenderRow({
   isSelected,
   onSelect,
 }: {
-  tender: MockTender;
+  tender: Tender;
   isSelected: boolean;
   onSelect: (id: string) => void;
 }) {
   const { date, daysLeft } = formatDeadline(tender.deadline);
-  const bandLabel = getBandLabel(tender.matchBand);
   const isDeadlineSoon = tender.status === 'deadline-soon';
   const visibleTags = tender.fitTags.slice(0, 3);
   const remainingTags = tender.fitTags.length - visibleTags.length;
@@ -218,9 +259,15 @@ function TenderRow({
     >
       {/* Score Badge */}
       <div className="flex flex-col items-center justify-center w-14 h-14 bg-surface-raised border border-rule rounded-md">
-        <div className="font-mono text-lg font-bold text-accent">
-          {tender.score}
-        </div>
+        {tender.score === null ? (
+          <div className="text-[10px] font-medium text-ink-faint text-center leading-tight px-1">
+            Analysis limited
+          </div>
+        ) : (
+          <div className="font-mono text-lg font-bold text-accent">
+            {tender.score}
+          </div>
+        )}
       </div>
 
       {/* Tender Info */}
@@ -297,12 +344,12 @@ function TenderRow({
   );
 }
 
-function DetailPanel({ tender }: { tender: MockTender }) {
+function DetailPanel({ tender }: { tender: Tender }) {
   const { date } = formatDeadline(tender.deadline);
   const bandLabel = getBandLabel(tender.matchBand);
   const statusLabel = getStatusLabel(tender.status);
   const budgetDisplay = tender.estimatedValue
-    ? `${tender.currency} ${tender.estimatedValue.toLocaleString()}`
+    ? `${tender.currency ?? ''} ${tender.estimatedValue.toLocaleString()}`.trim()
     : 'Not stated';
 
   return (
@@ -316,7 +363,7 @@ function DetailPanel({ tender }: { tender: MockTender }) {
           Score
         </div>
         <div className="text-sm text-ink">
-          {tender.score} · {bandLabel}
+          {tender.score === null ? bandLabel : `${tender.score} · ${bandLabel}`}
         </div>
       </div>
 
@@ -355,21 +402,23 @@ function DetailPanel({ tender }: { tender: MockTender }) {
         <div className="text-sm text-ink">{statusLabel}</div>
       </div>
 
-      <div className="mb-6 pb-4 border-b border-rule">
-        <div className="text-xs font-semibold text-ink-faint uppercase tracking-wider mb-2">
-          Tech Tags
+      {tender.fitTags.length > 0 && (
+        <div className="mb-6 pb-4 border-b border-rule">
+          <div className="text-xs font-semibold text-ink-faint uppercase tracking-wider mb-2">
+            Tech Tags
+          </div>
+          <div className="flex gap-2 flex-wrap">
+            {tender.fitTags.map((tag) => (
+              <span
+                key={tag}
+                className="px-3 py-1 bg-accent/10 text-accent rounded-sm text-xs font-medium"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
         </div>
-        <div className="flex gap-2 flex-wrap">
-          {tender.fitTags.map((tag) => (
-            <span
-              key={tag}
-              className="px-3 py-1 bg-accent/10 text-accent rounded-sm text-xs font-medium"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-      </div>
+      )}
 
       <div className="flex flex-col gap-3 mt-auto pt-6 border-t border-rule">
         <button className="px-4 py-3 bg-accent text-accent-ink rounded-md text-sm font-medium hover:bg-blue-700 transition-all">
