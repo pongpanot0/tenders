@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Shell - Tender Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.css">
+    <style>
+        :root {
+            --color-canvas: #f5f7fa;
+            --color-surface: #ffffff;
+            --color-surface-raised: #eef1f7;
+            --color-ink: #0f172a;
+            --color-ink-muted: #64748b;
+            --color-ink-faint: #cbd5e1;
+            --color-rule: #e2e8f0;
+            --color-accent: #0052cc;
+            --color-accent-ink: #ffffff;
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-canvas);
+            color: var(--color-ink);
+        }
+
+        /* DESKTOP VIEW */
+        .desktop-view {
+            display: grid;
+            grid-template-columns: 232px 1fr 360px;
+            grid-template-rows: 64px 1fr;
+            min-height: 100vh;
+        }
+
+        .mobile-view {
+            display: none;
+            grid-template-columns: 1fr;
+            grid-template-rows: 1fr 60px;
+            min-height: 100vh;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            grid-column: 1 / -1;
+            background-color: var(--color-surface);
+            border-bottom: 1px solid var(--color-rule);
+            padding: 0 var(--space-8);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .top-bar-left {
+            display: flex;
+            align-items: center;
+            gap: var(--space-6);
+            flex: 1;
+        }
+
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--color-accent);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .logo svg {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2px;
+        }
+
+        .org-selector {
+            padding: 8px var(--space-3);
+            background-color: var(--color-surface-raised);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            cursor: pointer;
+            color: var(--color-ink);
+            min-width: 120px;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 400px;
+            padding: 8px var(--space-4);
+            background-color: var(--color-surface-raised);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            color: var(--color-ink-muted);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .search-box::after {
+            content: '⌘ K';
+            margin-left: auto;
+            font-size: 11px;
+            color: var(--color-ink-faint);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: var(--space-6);
+        }
+
+        .help-link {
+            font-size: 13px;
+            color: var(--color-ink-muted);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            background-color: var(--color-surface-raised);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            grid-row: 2;
+            grid-column: 1;
+            background-color: var(--color-surface);
+            border-right: 1px solid var(--color-rule);
+            padding: var(--space-6) var(--space-4);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-8);
+            overflow-y: auto;
+        }
+
+        .nav-section {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-1);
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--color-ink-faint);
+            text-transform: uppercase;
+            padding: var(--space-3) var(--space-2);
+            letter-spacing: 0.5px;
+        }
+
+        .nav-item {
+            padding: var(--space-3) var(--space-4);
+            border-left: 2px solid transparent;
+            color: var(--color-ink-muted);
+            cursor: pointer;
+            font-size: 13px;
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            transition: all 150ms ease;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .nav-item svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2px;
+        }
+
+        .nav-item:hover {
+            background-color: var(--color-surface-raised);
+            color: var(--color-ink);
+        }
+
+        .nav-item.active {
+            border-left-color: var(--color-accent);
+            background-color: rgba(0, 82, 204, 0.05);
+            color: var(--color-accent);
+            font-weight: 500;
+        }
+
+        .nav-spacer {
+            flex: 1;
+        }
+
+        /* Main Content Area */
+        .main-area {
+            grid-row: 2;
+            grid-column: 2;
+            background-color: var(--color-canvas);
+            padding: var(--space-8);
+            overflow-y: auto;
+        }
+
+        .main-header {
+            margin-bottom: var(--space-8);
+        }
+
+        .main-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: var(--space-2);
+        }
+
+        .main-description {
+            font-size: 14px;
+            color: var(--color-ink-muted);
+        }
+
+        .placeholder-content {
+            background-color: var(--color-surface);
+            border: 2px dashed var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-12);
+            text-align: center;
+            color: var(--color-ink-faint);
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Context Panel */
+        .context-panel {
+            grid-row: 2;
+            grid-column: 3;
+            background-color: var(--color-surface);
+            border-left: 1px solid var(--color-rule);
+            padding: var(--space-6);
+            overflow-y: auto;
+        }
+
+        .context-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--color-ink-faint);
+            text-transform: uppercase;
+            margin-bottom: var(--space-4);
+            letter-spacing: 0.5px;
+        }
+
+        .context-item {
+            margin-bottom: var(--space-6);
+            padding-bottom: var(--space-4);
+            border-bottom: 1px solid var(--color-rule);
+        }
+
+        .context-item:last-child {
+            border-bottom: none;
+        }
+
+        .context-label {
+            font-size: 12px;
+            color: var(--color-ink-muted);
+            margin-bottom: var(--space-2);
+        }
+
+        .context-value {
+            font-size: 14px;
+            color: var(--color-ink);
+            line-height: 1.5;
+        }
+
+        /* MOBILE VIEW */
+        @media (max-width: 959px) {
+            .desktop-view {
+                display: none;
+            }
+
+            .mobile-view {
+                display: grid;
+            }
+
+            .mobile-main {
+                grid-row: 1;
+                grid-column: 1;
+                background-color: var(--color-canvas);
+                overflow-y: auto;
+                padding: var(--space-4);
+            }
+
+            .mobile-top-bar {
+                background-color: var(--color-surface);
+                border-bottom: 1px solid var(--color-rule);
+                padding: var(--space-4) var(--space-6);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: var(--space-4);
+            }
+
+            .mobile-title {
+                font-family: 'Space Grotesk', sans-serif;
+                font-size: 18px;
+                font-weight: 700;
+            }
+
+            .mobile-subtitle {
+                font-size: 12px;
+                color: var(--color-ink-muted);
+                margin-top: var(--space-1);
+            }
+
+            .mobile-nav {
+                grid-row: 2;
+                grid-column: 1;
+                background-color: var(--color-surface);
+                border-top: 1px solid var(--color-rule);
+                display: flex;
+                justify-content: space-around;
+                padding: var(--space-3);
+                box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+            }
+
+            .mobile-nav-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: var(--space-1);
+                padding: var(--space-2);
+                color: var(--color-ink-faint);
+                font-size: 11px;
+                cursor: pointer;
+                flex: 1;
+                text-align: center;
+                border-radius: var(--radius-sm);
+                transition: all 150ms ease;
+            }
+
+            .mobile-nav-icon {
+                width: 20px;
+                height: 20px;
+                stroke-width: 2px;
+            }
+
+            .mobile-nav-item:hover,
+            .mobile-nav-item.active {
+                color: var(--color-accent);
+                background-color: rgba(0, 82, 204, 0.05);
+            }
+
+            .content-card {
+                background-color: var(--color-surface);
+                border: 1px solid var(--color-rule);
+                border-radius: var(--radius-md);
+                padding: var(--space-6);
+                margin-bottom: var(--space-4);
+            }
+
+            .content-card-title {
+                font-family: 'Space Grotesk', sans-serif;
+                font-size: 16px;
+                font-weight: 700;
+                margin-bottom: var(--space-3);
+            }
+
+            .content-card-text {
+                font-size: 13px;
+                color: var(--color-ink-muted);
+                line-height: 1.5;
+            }
+        }
+
+        .state-controls {
+            position: fixed;
+            bottom: var(--space-8);
+            left: var(--space-8);
+            background: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            display: flex;
+            gap: var(--space-2);
+            flex-wrap: wrap;
+            max-width: 400px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+        }
+
+        .state-button {
+            padding: var(--space-2) var(--space-3);
+            background: var(--color-canvas);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 150ms ease;
+            font-weight: 500;
+        }
+
+        .state-button:hover {
+            background: var(--color-surface-raised);
+            border-color: var(--color-accent);
+        }
+
+        .state-button.active {
+            background: var(--color-accent);
+            color: white;
+            border-color: var(--color-accent);
+        }
+    </style>
+</head>
+<body>
+    <!-- DESKTOP VIEW (1280px+) -->
+    <div class="desktop-view" id="desktopView">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <div class="logo"><svg data-lucide="target"></svg> Tender Intelligence</div>
+                <select class="org-selector">
+                    <option>Acme Software</option>
+                </select>
+                <div class="search-box">Search tenders...</div>
+            </div>
+            <div class="top-bar-right">
+                <span class="help-link">? Help</span>
+                <div class="avatar">A</div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="nav-section">
+                <div class="nav-section-title">Primary</div>
+                <div class="nav-item active"><svg data-lucide="target"></svg> Inbox</div>
+                <div class="nav-item"><svg data-lucide="search"></svg> Explore</div>
+                <div class="nav-item"><svg data-lucide="list"></svg> Pipeline</div>
+                <div class="nav-item"><svg data-lucide="bell"></svg> Alerts</div>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Account</div>
+                <div class="nav-item"><svg data-lucide="user"></svg> Profile</div>
+                <div class="nav-item"><svg data-lucide="settings"></svg> Settings</div>
+            </div>
+            <div class="nav-spacer"></div>
+            <div class="nav-section">
+                <div class="nav-item"><svg data-lucide="book"></svg> Docs</div>
+                <div class="nav-item"><svg data-lucide="message-circle"></svg> Feedback</div>
+            </div>
+        </div>
+
+        <!-- Main Work Area -->
+        <div class="main-area">
+            <div class="main-header">
+                <h1 class="main-title">Inbox</h1>
+                <p class="main-description">Recommended opportunities matched to your company profile</p>
+            </div>
+            <div class="placeholder-content">
+                Content area (list, table, detail route, or full-screen detail)
+            </div>
+        </div>
+
+        <!-- Context Panel -->
+        <div class="context-panel">
+            <div class="context-title">Saved State</div>
+            <div class="context-item">
+                <div class="context-label">Score</div>
+                <div class="context-value">87 — Strong match</div>
+            </div>
+            <div class="context-item">
+                <div class="context-label">Status</div>
+                <div class="context-value">Open</div>
+            </div>
+            <div class="context-item">
+                <div class="context-label">Saved</div>
+                <div class="context-value">2 Sep, 2:14 PM</div>
+            </div>
+            <div class="context-item">
+                <div class="context-label">Notes</div>
+                <div class="context-value">Contact Singapore office for delivery logistics</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MOBILE VIEW (< 960px) -->
+    <div class="mobile-view" id="mobileView">
+        <div class="mobile-main">
+            <div class="mobile-top-bar">
+                <div>
+                    <div class="mobile-title">Inbox</div>
+                    <div class="mobile-subtitle">14 open matches</div>
+                </div>
+                <div class="avatar">A</div>
+            </div>
+
+            <div class="content-card">
+                <div class="content-card-title">Cloud case management</div>
+                <div class="content-card-text">
+                    <strong>Score: 91 — Strong match</strong><br>
+                    Deadline: 28 Sep (5 days)<br>
+                    Buyer: Ministry of Health
+                </div>
+            </div>
+
+            <div class="content-card">
+                <div class="content-card-title">Mobile service platform</div>
+                <div class="content-card-text">
+                    <strong>Score: 84 — Strong match</strong><br>
+                    Deadline: 02 Oct (9 days)<br>
+                    Buyer: State Bank
+                </div>
+            </div>
+
+            <div class="content-card">
+                <div class="content-card-title">Data integration support</div>
+                <div class="content-card-text">
+                    <strong>Score: 73 — Worth reviewing</strong><br>
+                    Deadline: 18 Sep (2 days)<br>
+                    Buyer: Transportation Authority
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Bottom Navigation -->
+        <div class="mobile-nav">
+            <div class="mobile-nav-item active">
+                <svg data-lucide="target" class="mobile-nav-icon"></svg>
+                <div>Inbox</div>
+            </div>
+            <div class="mobile-nav-item">
+                <svg data-lucide="search" class="mobile-nav-icon"></svg>
+                <div>Explore</div>
+            </div>
+            <div class="mobile-nav-item">
+                <svg data-lucide="list" class="mobile-nav-icon"></svg>
+                <div>Pipeline</div>
+            </div>
+            <div class="mobile-nav-item">
+                <svg data-lucide="bell" class="mobile-nav-icon"></svg>
+                <div>Alerts</div>
+            </div>
+            <div class="mobile-nav-item">
+                <svg data-lucide="more-vertical" class="mobile-nav-icon"></svg>
+                <div>More</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- State Toggle Controls -->
+    <div class="state-controls">
+        <button class="state-button active" onclick="showState('desktop')">Desktop (1280px)</button>
+        <button class="state-button" onclick="showState('mobile')">Mobile (375px)</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        function showState(state) {
+            document.getElementById('desktopView').style.display = state === 'desktop' ? 'grid' : 'none';
+            document.getElementById('mobileView').style.display = state === 'mobile' ? 'grid' : 'none';
+
+            document.querySelectorAll('.state-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>

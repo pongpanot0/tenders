@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin: Review Queue - Tender Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.css">
+    <style>
+        :root {
+            --color-canvas: #f5f7fa;
+            --color-surface: #ffffff;
+            --color-surface-raised: #eef1f7;
+            --color-ink: #0f172a;
+            --color-ink-muted: #64748b;
+            --color-ink-faint: #cbd5e1;
+            --color-rule: #e2e8f0;
+            --color-accent: #0052cc;
+            --color-accent-ink: #ffffff;
+            --color-danger: #dc2626;
+            --color-warning: #d97706;
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-canvas);
+            color: var(--color-ink);
+        }
+
+        .admin-banner {
+            background-color: var(--color-danger);
+            color: var(--color-accent-ink);
+            padding: var(--space-4) var(--space-8);
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .admin-banner svg {
+            width: 18px;
+            height: 18px;
+            stroke-width: 2px;
+            flex-shrink: 0;
+        }
+
+        .page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space-8);
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-8);
+            flex-wrap: wrap;
+            gap: var(--space-4);
+        }
+
+        .header-section {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+        }
+
+        .admin-label {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1);
+            background-color: var(--color-danger);
+            color: var(--color-accent-ink);
+            padding: var(--space-1) var(--space-3);
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .admin-label svg {
+            width: 12px;
+            height: 12px;
+            stroke-width: 2px;
+        }
+
+        .page-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .review-item {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-6);
+            margin-bottom: var(--space-6);
+        }
+
+        .item-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: var(--space-4);
+        }
+
+        .item-type-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1);
+            padding: var(--space-1) var(--space-3);
+            background-color: rgba(217, 119, 6, 0.1);
+            color: var(--color-warning);
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .item-type-badge svg {
+            width: 12px;
+            height: 12px;
+            stroke-width: 2px;
+        }
+
+        .item-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: var(--space-2);
+            color: var(--color-ink);
+        }
+
+        .item-meta {
+            font-size: 12px;
+            color: var(--color-ink-muted);
+            margin-bottom: var(--space-4);
+        }
+
+        .item-content {
+            background-color: var(--color-canvas);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-sm);
+            padding: var(--space-4);
+            margin-bottom: var(--space-4);
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--color-ink-muted);
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: var(--space-3);
+        }
+
+        .button {
+            padding: var(--space-3) var(--space-4);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 150ms ease;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .button-primary {
+            background-color: var(--color-accent);
+            color: var(--color-accent-ink);
+            border-color: var(--color-accent);
+        }
+
+        .button-primary:hover {
+            background-color: #0043a8;
+        }
+
+        .button-secondary {
+            background-color: var(--color-surface-raised);
+            color: var(--color-ink);
+        }
+
+        .button-secondary:hover {
+            background-color: var(--color-canvas);
+        }
+
+        .button svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--space-12);
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            color: var(--color-ink-faint);
+        }
+
+        .empty-state svg {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto var(--space-4);
+            stroke-width: 1.5px;
+        }
+
+        .queue-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-6);
+            margin-bottom: var(--space-8);
+        }
+
+        .stat-card {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-6);
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--color-ink-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            margin-bottom: var(--space-2);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--color-ink);
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-banner">
+        <svg data-lucide="alert-triangle"></svg>
+        Admin environment — restricted access. Do not navigate here from customer navigation.
+    </div>
+
+    <div class="page">
+        <div class="page-header">
+            <div class="header-section">
+                <div class="admin-label">
+                    <svg data-lucide="shield"></svg>
+                    Admin
+                </div>
+                <div>
+                    <h1 class="page-title">Review Queue</h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="queue-stats">
+            <div class="stat-card">
+                <div class="stat-label">Items in queue</div>
+                <div class="stat-value">3</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Policy issues</div>
+                <div class="stat-value">1</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Extraction errors</div>
+                <div class="stat-value">2</div>
+            </div>
+        </div>
+
+        <!-- Policy Issue -->
+        <div class="review-item">
+            <div class="item-header">
+                <div>
+                    <div class="item-type-badge">
+                        <svg data-lucide="alert-circle"></svg>
+                        Policy Issue
+                    </div>
+                    <div class="item-title" style="margin-top: var(--space-2);">Duplicate tender detected</div>
+                    <div class="item-meta">Source: EU TED · ID: TEN/2026-8844 · Discovered 3 hours ago</div>
+                </div>
+            </div>
+
+            <div class="item-content">
+                Tender ID TEN/2026-8844 from EU TED appears to be a duplicate of existing tender ID TEN/2026-8840. Same buyer (European Commission), same scope (Cloud infrastructure modernization), same deadline (28 September). Both were indexed within 2 hours.
+            </div>
+
+            <div class="item-actions">
+                <button class="button button-primary">
+                    <svg data-lucide="check-circle"></svg>
+                    Mark as duplicate
+                </button>
+                <button class="button button-secondary">
+                    <svg data-lucide="x"></svg>
+                    Not a duplicate
+                </button>
+            </div>
+        </div>
+
+        <!-- Extraction Error -->
+        <div class="review-item">
+            <div class="item-header">
+                <div>
+                    <div class="item-type-badge" style="background-color: rgba(220, 38, 38, 0.1); color: var(--color-danger);">
+                        <svg data-lucide="alert-triangle"></svg>
+                        Extraction Error
+                    </div>
+                    <div class="item-title" style="margin-top: var(--space-2);">Unable to extract deadline</div>
+                    <div class="item-meta">Source: Government Procurement (Thailand) · ID: GP-2026-445 · Discovered 2 hours ago</div>
+                </div>
+            </div>
+
+            <div class="item-content">
+                OCR extracted text but deadline field could not be reliably parsed. Multiple date formats detected in notice PDF (Thai calendar + Gregorian). Confidence: 23%.
+            </div>
+
+            <div class="item-actions">
+                <button class="button button-primary">
+                    <svg data-lucide="check-circle"></svg>
+                    Provide deadline
+                </button>
+                <button class="button button-secondary">
+                    <svg data-lucide="skip-forward"></svg>
+                    Skip
+                </button>
+            </div>
+        </div>
+
+        <!-- Low-confidence requirement match -->
+        <div class="review-item">
+            <div class="item-header">
+                <div>
+                    <div class="item-type-badge" style="background-color: rgba(217, 119, 6, 0.1); color: var(--color-warning);">
+                        <svg data-lucide="help-circle"></svg>
+                        Low Confidence
+                    </div>
+                    <div class="item-title" style="margin-top: var(--space-2);">Ambiguous technical requirement</div>
+                    <div class="item-meta">Source: World Bank Procurement · ID: WB-RFP-2026-12345 · Discovered 1 hour ago</div>
+                </div>
+            </div>
+
+            <div class="item-content">
+                Requirement states "enterprise-grade database system". Could match PostgreSQL, Oracle, or other RDBMS. Extracted as "Database (PostgreSQL preferred)" with confidence 56%. Is this correct or should we flag as "Database (unspecified)"?
+            </div>
+
+            <div class="item-actions">
+                <button class="button button-primary">
+                    <svg data-lucide="check-circle"></svg>
+                    Accept extraction
+                </button>
+                <button class="button button-secondary">
+                    <svg data-lucide="edit-2"></svg>
+                    Edit & resave
+                </button>
+                <button class="button button-secondary">
+                    <svg data-lucide="skip-forward"></svg>
+                    Uncertain — escalate
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

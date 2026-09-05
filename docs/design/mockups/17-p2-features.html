@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P2 Features - Tender Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.css">
+    <style>
+        :root {
+            --color-canvas: #f5f7fa;
+            --color-surface: #ffffff;
+            --color-surface-raised: #eef1f7;
+            --color-ink: #0f172a;
+            --color-ink-muted: #64748b;
+            --color-ink-faint: #cbd5e1;
+            --color-rule: #e2e8f0;
+            --color-accent: #0052cc;
+            --color-accent-ink: #ffffff;
+            --color-success: #16a34a;
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-canvas);
+            color: var(--color-ink);
+        }
+
+        .page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space-8);
+        }
+
+        .page-header {
+            margin-bottom: var(--space-8);
+        }
+
+        .page-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: var(--space-3);
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: var(--color-ink-muted);
+        }
+
+        .tabs {
+            display: flex;
+            gap: var(--space-4);
+            margin-bottom: var(--space-8);
+            border-bottom: 1px solid var(--color-rule);
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: var(--space-4) 0;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--color-ink-muted);
+            white-space: nowrap;
+            transition: all 150ms ease;
+        }
+
+        .tab:hover {
+            color: var(--color-ink);
+        }
+
+        .tab.active {
+            color: var(--color-accent);
+            border-bottom-color: var(--color-accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-6);
+            margin-bottom: var(--space-6);
+        }
+
+        .card-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: var(--space-3);
+            color: var(--color-ink);
+        }
+
+        .card-description {
+            font-size: 13px;
+            color: var(--color-ink-muted);
+            line-height: 1.6;
+            margin-bottom: var(--space-4);
+        }
+
+        .button {
+            padding: var(--space-3) var(--space-4);
+            background-color: var(--color-accent);
+            color: var(--color-accent-ink);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 150ms ease;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .button svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2px;
+        }
+
+        .button:hover {
+            background-color: #0043a8;
+        }
+
+        .button-secondary {
+            background-color: var(--color-surface-raised);
+            color: var(--color-ink);
+        }
+
+        .button-secondary:hover {
+            background-color: var(--color-canvas);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--space-10);
+            background-color: var(--color-canvas);
+            border: 1px dashed var(--color-rule);
+            border-radius: var(--radius-md);
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto var(--space-4);
+            stroke-width: 1.5px;
+            color: var(--color-ink-faint);
+        }
+
+        .empty-state-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-ink-muted);
+            margin-bottom: var(--space-2);
+        }
+
+        .empty-state-text {
+            font-size: 13px;
+            color: var(--color-ink-faint);
+        }
+
+        .comment-thread {
+            background-color: var(--color-canvas);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+        }
+
+        .comment {
+            margin-bottom: var(--space-4);
+            padding-bottom: var(--space-4);
+            border-bottom: 1px solid var(--color-rule);
+        }
+
+        .comment:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: var(--color-ink);
+            margin-bottom: var(--space-1);
+        }
+
+        .comment-time {
+            font-size: 11px;
+            color: var(--color-ink-faint);
+        }
+
+        .comment-text {
+            font-size: 13px;
+            color: var(--color-ink-muted);
+            line-height: 1.5;
+            margin-top: var(--space-2);
+        }
+
+        .mention {
+            color: var(--color-accent);
+            font-weight: 500;
+        }
+
+        .api-key-row {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            padding: var(--space-4);
+            background-color: var(--color-canvas);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--space-3);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+        }
+
+        .api-key-value {
+            flex: 1;
+            color: var(--color-ink-faint);
+            word-break: break-all;
+        }
+
+        .api-key-actions {
+            display: flex;
+            gap: var(--space-2);
+        }
+
+        .icon-button {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--color-rule);
+            background-color: var(--color-surface);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 150ms ease;
+        }
+
+        .icon-button svg {
+            width: 14px;
+            height: 14px;
+            stroke-width: 2px;
+        }
+
+        .icon-button:hover {
+            border-color: var(--color-accent);
+            background-color: var(--color-surface-raised);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .table th {
+            background-color: var(--color-canvas);
+            padding: var(--space-3);
+            text-align: left;
+            font-weight: 600;
+            color: var(--color-ink-muted);
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--color-rule);
+        }
+
+        .table td {
+            padding: var(--space-3);
+            border-bottom: 1px solid var(--color-rule);
+            color: var(--color-ink-muted);
+        }
+
+        .table td strong {
+            color: var(--color-ink);
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="page-header">
+            <h1 class="page-title">P2 Features Preview</h1>
+            <p class="page-subtitle">Planned enhancements for future releases — lighter-fidelity sketches</p>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('crm')">CRM Integration</div>
+            <div class="tab" onclick="switchTab('collaboration')">Collaboration</div>
+            <div class="tab" onclick="switchTab('sso')">SSO/SCIM</div>
+            <div class="tab" onclick="switchTab('api')">API & Reporting</div>
+            <div class="tab" onclick="switchTab('comparison')">Profile Comparison</div>
+            <div class="tab" onclick="switchTab('learning')">Learning Controls</div>
+        </div>
+
+        <!-- CRM Integration -->
+        <div id="crm-tab" class="tab-content active">
+            <div class="card">
+                <div class="card-title">Connect your CRM</div>
+                <div class="card-description">Link Tender Intelligence with your CRM system to automatically create deals and sync opportunity status.</div>
+                <div class="empty-state">
+                    <svg data-lucide="link"></svg>
+                    <div class="empty-state-title">No CRM connection</div>
+                    <div class="empty-state-text">Click below to connect Salesforce, HubSpot, or Pipedrive</div>
+                    <div style="margin-top: var(--space-6);">
+                        <button class="button">
+                            <svg data-lucide="plus"></svg>
+                            Connect CRM
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced Collaboration -->
+        <div id="collaboration-tab" class="tab-content">
+            <div class="card">
+                <div class="card-title">Team Discussion</div>
+                <div class="card-description">Example: Comments on a pipeline opportunity with mentions</div>
+                <div class="comment-thread">
+                    <div class="comment">
+                        <div class="comment-author">Sarah Chen</div>
+                        <div class="comment-time">15 min ago</div>
+                        <div class="comment-text">We should clarify the technical requirements with the client. <span class="mention">@James Park</span> — can you review the AWS specs?</div>
+                    </div>
+                    <div class="comment">
+                        <div class="comment-author">James Park</div>
+                        <div class="comment-time">8 min ago</div>
+                        <div class="comment-text"><span class="mention">@Sarah Chen</span> — looks good. We have all the capabilities they're asking for. Timeline is tight but doable in 3 months.</div>
+                    </div>
+                    <div class="comment">
+                        <div class="comment-author">Alex Rodriguez</div>
+                        <div class="comment-time">2 min ago</div>
+                        <div class="comment-text"><span class="mention">@James</span> noted. Budget alignment is within range. Let's move forward to proposal stage.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SSO/SCIM -->
+        <div id="sso-tab" class="tab-content">
+            <div class="card">
+                <div class="card-title">Enterprise SSO & SCIM</div>
+                <div class="card-description">Configure single sign-on and user provisioning for your organization</div>
+
+                <div style="margin-bottom: var(--space-6);">
+                    <div style="font-weight: 600; margin-bottom: var(--space-2); color: var(--color-ink);">SSO Provider</div>
+                    <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
+                        <button class="button-secondary">Azure AD</button>
+                        <button class="button-secondary">Okta</button>
+                        <button class="button-secondary">Google Workspace</button>
+                        <button class="button-secondary">Configure custom</button>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: var(--space-6);">
+                    <div style="font-weight: 600; margin-bottom: var(--space-2); color: var(--color-ink);">SCIM 2.0</div>
+                    <div style="padding: var(--space-4); background-color: var(--color-canvas); border: 1px solid var(--color-rule); border-radius: var(--radius-sm); font-size: 12px; color: var(--color-ink-muted);">
+                        <strong>SCIM Endpoint:</strong> https://api.tender-intelligence.com/scim/v2<br/>
+                        <strong>Status:</strong> Not configured
+                    </div>
+                </div>
+
+                <button class="button">
+                    <svg data-lucide="settings"></svg>
+                    Configure SSO
+                </button>
+            </div>
+        </div>
+
+        <!-- API & Reporting -->
+        <div id="api-tab" class="tab-content">
+            <div class="card">
+                <div class="card-title">API Keys</div>
+                <div class="card-description">Generate keys for programmatic access to tender data and custom integrations</div>
+
+                <div style="margin-bottom: var(--space-6);">
+                    <div style="font-weight: 600; margin-bottom: var(--space-3); color: var(--color-ink);">Active Keys</div>
+                    <div class="api-key-row">
+                        <div class="api-key-value">tg_live_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6</div>
+                        <div class="api-key-actions">
+                            <button class="icon-button" title="Copy">
+                                <svg data-lucide="copy"></svg>
+                            </button>
+                            <button class="icon-button" title="Revoke">
+                                <svg data-lucide="trash-2"></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="button">
+                    <svg data-lucide="plus"></svg>
+                    Generate New Key
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Custom Reporting</div>
+                <div class="card-description">Build custom dashboards and export tender data with flexible schema</div>
+                <div class="empty-state">
+                    <svg data-lucide="bar-chart-3"></svg>
+                    <div class="empty-state-title">No reports yet</div>
+                    <div class="empty-state-text">Create a custom report to track opportunities by category, stage, or timeline</div>
+                    <div style="margin-top: var(--space-6);">
+                        <button class="button">
+                            <svg data-lucide="plus"></svg>
+                            Create Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Multi-Profile Comparison -->
+        <div id="comparison-tab" class="tab-content">
+            <div class="card">
+                <div class="card-title">Organization Profiles Comparison</div>
+                <div class="card-description">Compare matching performance across multiple company profiles</div>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Attribute</th>
+                            <th>Profile A (Current)</th>
+                            <th>Profile B (Updated)</th>
+                            <th>Difference</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Active</strong></td>
+                            <td>Yes</td>
+                            <td>No (test)</td>
+                            <td>—</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Services</strong></td>
+                            <td>React, Node.js, AWS</td>
+                            <td>React, Vue, AWS, GCP</td>
+                            <td>+Vue +GCP</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Target markets</strong></td>
+                            <td>Singapore, Thailand</td>
+                            <td>Singapore, Thailand, Malaysia</td>
+                            <td>+Malaysia</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Budget range</strong></td>
+                            <td>$50k–$250k</td>
+                            <td>$30k–$300k</td>
+                            <td>Widened</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Recent matches</strong></td>
+                            <td>14 (avg score 78)</td>
+                            <td>22 (avg score 71)</td>
+                            <td>+8 (lower avg)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Personalized Learning Controls -->
+        <div id="learning-tab" class="tab-content">
+            <div class="card">
+                <div class="card-title">Feedback & Learning</div>
+                <div class="card-description">Tell us which tenders were relevant or not relevant to improve recommendations</div>
+
+                <div style="margin-bottom: var(--space-6);">
+                    <div style="font-weight: 600; margin-bottom: var(--space-3); color: var(--color-ink);">Recent Feedback (20 total)</div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Tender</th>
+                                <th>Feedback</th>
+                                <th>Score (at time)</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Cloud platform overhaul</strong></td>
+                                <td style="color: var(--color-success); font-weight: 600;">Relevant ✓</td>
+                                <td>84</td>
+                                <td>2 days ago</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Data warehouse services</strong></td>
+                                <td style="color: var(--color-success); font-weight: 600;">Relevant ✓</td>
+                                <td>76</td>
+                                <td>5 days ago</td>
+                            </tr>
+                            <tr>
+                                <td><strong>IoT device firmware</strong></td>
+                                <td style="color: #999; font-weight: 600;">Not relevant ✗</td>
+                                <td>67</td>
+                                <td>8 days ago</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="margin-bottom: var(--space-6);">
+                    <label style="display: flex; align-items: center; gap: var(--space-2); cursor: pointer; font-weight: 500;">
+                        <input type="checkbox" checked style="width: 16px; height: 16px;">
+                        Use my feedback to personalize recommendations
+                    </label>
+                </div>
+
+                <button class="button">
+                    <svg data-lucide="download"></svg>
+                    Download feedback history
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        lucide.createIcons();
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>

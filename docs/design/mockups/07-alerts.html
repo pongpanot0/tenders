@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alerts - Tender Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.css">
+    <style>
+        :root {
+            --color-canvas: #f5f7fa;
+            --color-surface: #ffffff;
+            --color-surface-raised: #eef1f7;
+            --color-ink: #0f172a;
+            --color-ink-muted: #64748b;
+            --color-ink-faint: #cbd5e1;
+            --color-rule: #e2e8f0;
+            --color-accent: #0052cc;
+            --color-accent-ink: #ffffff;
+            --color-warning: #d97706;
+            --color-success: #16a34a;
+            --color-danger: #dc2626;
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-canvas);
+            color: var(--color-ink);
+        }
+
+        .page {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: var(--space-8);
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-8);
+        }
+
+        .main-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .page-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: var(--space-6);
+            color: var(--color-ink);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: var(--space-4);
+            margin-bottom: var(--space-6);
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--color-rule);
+            padding-bottom: var(--space-4);
+        }
+
+        .filter-tab {
+            padding: var(--space-3) var(--space-4);
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--color-ink-muted);
+            cursor: pointer;
+            transition: all 150ms ease;
+        }
+
+        .filter-tab:hover {
+            color: var(--color-ink);
+        }
+
+        .filter-tab.active {
+            color: var(--color-accent);
+            border-bottom-color: var(--color-accent);
+        }
+
+        .alert-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+        }
+
+        .alert-item {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-5) var(--space-6);
+            transition: all 150ms ease;
+            cursor: pointer;
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: var(--space-4);
+            align-items: start;
+        }
+
+        .alert-item:hover {
+            border-color: var(--color-accent);
+            background-color: rgba(0, 82, 204, 0.02);
+        }
+
+        .alert-item.unread {
+            background-color: rgba(0, 82, 204, 0.05);
+            border-color: var(--color-accent);
+        }
+
+        .alert-item.unread::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background-color: var(--color-accent);
+            border-radius: 6px 0 0 6px;
+        }
+
+        .alert-content {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+            margin-left: var(--space-4);
+        }
+
+        .alert-type {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--color-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .alert-type svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2px;
+        }
+
+        .alert-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-ink);
+            line-height: 1.4;
+        }
+
+        .alert-meta {
+            font-size: 12px;
+            color: var(--color-ink-muted);
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+        }
+
+        .alert-channels {
+            display: flex;
+            gap: var(--space-2);
+            align-items: center;
+        }
+
+        .channel-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1);
+            padding: var(--space-1) var(--space-2);
+            background-color: var(--color-canvas);
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            color: var(--color-ink-muted);
+        }
+
+        .channel-badge svg {
+            width: 12px;
+            height: 12px;
+            stroke-width: 2px;
+        }
+
+        .channel-badge.email {
+            background-color: rgba(0, 82, 204, 0.08);
+            color: var(--color-accent);
+        }
+
+        .channel-badge.inapp {
+            background-color: rgba(22, 163, 74, 0.08);
+            color: var(--color-success);
+        }
+
+        .alert-time {
+            font-size: 12px;
+            color: var(--color-ink-muted);
+            min-width: 100px;
+            text-align: right;
+        }
+
+        .alert-action {
+            padding: var(--space-3) var(--space-4);
+            background-color: var(--color-accent);
+            color: var(--color-accent-ink);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 150ms ease;
+        }
+
+        .alert-action:hover {
+            background-color: #0043a8;
+        }
+
+        /* Settings Panel */
+        .settings-panel {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-6);
+            height: fit-content;
+            position: sticky;
+            top: var(--space-8);
+        }
+
+        .settings-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: var(--space-4);
+            color: var(--color-ink);
+        }
+
+        .settings-section {
+            margin-bottom: var(--space-6);
+            padding-bottom: var(--space-4);
+            border-bottom: 1px solid var(--color-rule);
+        }
+
+        .settings-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .setting-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--color-ink-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--space-2);
+        }
+
+        .setting-value {
+            font-size: 13px;
+            color: var(--color-ink);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .toggle {
+            display: inline-block;
+            width: 40px;
+            height: 24px;
+            background-color: var(--color-ink-faint);
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 150ms ease;
+        }
+
+        .toggle.active {
+            background-color: var(--color-success);
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: left 150ms ease;
+        }
+
+        .toggle.active::after {
+            left: 18px;
+        }
+
+        .settings-link {
+            color: var(--color-accent);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .settings-link svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2px;
+        }
+
+        .settings-link:hover {
+            text-decoration: underline;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--space-12);
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            color: var(--color-ink-faint);
+        }
+
+        .empty-state svg {
+            width: 32px;
+            height: 32px;
+            margin: 0 auto var(--space-4);
+            stroke-width: 1.5px;
+        }
+
+        .empty-state-text {
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: var(--space-4);
+        }
+
+        .state-controls {
+            position: fixed;
+            bottom: var(--space-8);
+            left: var(--space-8);
+            background: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            display: flex;
+            gap: var(--space-2);
+            flex-wrap: wrap;
+            max-width: 400px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+        }
+
+        .state-button {
+            padding: var(--space-2) var(--space-3);
+            background: var(--color-canvas);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 150ms ease;
+            font-weight: 500;
+        }
+
+        .state-button:hover {
+            background: var(--color-surface-raised);
+            border-color: var(--color-accent);
+        }
+
+        .state-button.active {
+            background: var(--color-accent);
+            color: white;
+            border-color: var(--color-accent);
+        }
+
+        @media (max-width: 1024px) {
+            .page {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-panel {
+                position: relative;
+                top: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="main-column">
+            <h1 class="page-title">Alerts Center</h1>
+
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="switchTab('all', this)">All</button>
+                <button class="filter-tab" onclick="switchTab('unread', this)">Unread</button>
+                <button class="filter-tab" onclick="switchTab('matches', this)">New matches</button>
+                <button class="filter-tab" onclick="switchTab('changes', this)">Changes</button>
+            </div>
+
+            <div id="alertsContainer" class="alert-list">
+                <!-- Alert 1: New Strong Match -->
+                <div class="alert-item unread">
+                    <div class="alert-content">
+                        <div class="alert-type"><svg data-lucide="target"></svg> New Strong Match</div>
+                        <div class="alert-title">Cloud case management platform for healthcare</div>
+                        <div class="alert-meta">
+                            Just now · Ministry of Health
+                            <div class="alert-channels">
+                                <span class="channel-badge email"><svg data-lucide="mail"></svg> Email</span>
+                                <span class="channel-badge inapp"><svg data-lucide="bell"></svg> In-app</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: var(--space-3); align-items: flex-end;">
+                        <div class="alert-time">30 sec ago</div>
+                        <button class="alert-action">View</button>
+                    </div>
+                </div>
+
+                <!-- Alert 2: Deadline Changed -->
+                <div class="alert-item">
+                    <div class="alert-content">
+                        <div class="alert-type"><svg data-lucide="calendar"></svg> Deadline Changed</div>
+                        <div class="alert-title">Mobile service platform: Deadline moved from 02 Oct to 05 Oct</div>
+                        <div class="alert-meta">
+                            3 hours ago · State Bank
+                            <div class="alert-channels">
+                                <span class="channel-badge email"><svg data-lucide="mail"></svg> Email</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: var(--space-3); align-items: flex-end;">
+                        <div class="alert-time">3h ago</div>
+                        <button class="alert-action">View</button>
+                    </div>
+                </div>
+
+                <!-- Alert 3: Worth Reviewing -->
+                <div class="alert-item">
+                    <div class="alert-content">
+                        <div class="alert-type"><svg data-lucide="star"></svg> Worth Reviewing</div>
+                        <div class="alert-title">Data integration support platform</div>
+                        <div class="alert-meta">
+                            Yesterday · Transportation Authority
+                            <div class="alert-channels">
+                                <span class="channel-badge inapp"><svg data-lucide="bell"></svg> In-app</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: var(--space-3); align-items: flex-end;">
+                        <div class="alert-time">1d ago</div>
+                        <button class="alert-action">View</button>
+                    </div>
+                </div>
+
+                <!-- Alert 4: Tender Updated -->
+                <div class="alert-item">
+                    <div class="alert-content">
+                        <div class="alert-type"><svg data-lucide="refresh-cw"></svg> Tender Updated</div>
+                        <div class="alert-title">Government digital identity platform: Requirements clarified</div>
+                        <div class="alert-meta">
+                            2 days ago · Digital Economy Office
+                            <div class="alert-channels">
+                                <span class="channel-badge email"><svg data-lucide="mail"></svg> Email</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: var(--space-3); align-items: flex-end;">
+                        <div class="alert-time">2d ago</div>
+                        <button class="alert-action">View</button>
+                    </div>
+                </div>
+
+                <!-- Alert 5: Saved Search -->
+                <div class="alert-item">
+                    <div class="alert-content">
+                        <div class="alert-type"><svg data-lucide="search"></svg> Saved Search Match</div>
+                        <div class="alert-title">New tender: "React cloud platform" (Your saved search)</div>
+                        <div class="alert-meta">
+                            3 days ago · State & Ministry sources
+                            <div class="alert-channels">
+                                <span class="channel-badge inapp"><svg data-lucide="bell"></svg> In-app</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: var(--space-3); align-items: flex-end;">
+                        <div class="alert-time">3d ago</div>
+                        <button class="alert-action">View</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Panel -->
+        <div class="settings-panel">
+            <div class="settings-title">Alert settings</div>
+
+            <div class="settings-section">
+                <div class="setting-label">Email notifications</div>
+                <div class="setting-value">
+                    <div class="toggle active"></div>
+                    Enabled
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="setting-label">In-app notifications</div>
+                <div class="setting-value">
+                    <div class="toggle active"></div>
+                    Enabled
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="setting-label">Minimum score</div>
+                <div class="setting-value">
+                    Strong match (80+)
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="setting-label">Digest</div>
+                <div class="setting-value">
+                    Instant for strong matches
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <a href="#" class="settings-link"><svg data-lucide="settings"></svg> View all settings →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- State Toggle Controls -->
+    <div class="state-controls">
+        <button class="state-button active" onclick="showState('filled')">Alert feed (5)</button>
+        <button class="state-button" onclick="showState('empty')">Empty state</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        function switchTab(tab, element) {
+            document.querySelectorAll('.filter-tab').forEach(t => {
+                t.classList.remove('active');
+            });
+            element.classList.add('active');
+        }
+
+        function showState(state) {
+            const container = document.getElementById('alertsContainer');
+
+            if (state === 'empty') {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg data-lucide="bell"></svg>
+                        <div class="empty-state-text">No alerts yet. New matches will appear here.</div>
+                        <button style="padding: 8px 16px; background-color: var(--color-accent); color: white; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 500;">Review how alerts work</button>
+                    </div>
+                `;
+            } else {
+                location.reload();
+            }
+
+            document.querySelectorAll('.state-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>

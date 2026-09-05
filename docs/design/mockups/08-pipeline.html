@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pipeline - Tender Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.css">
+    <style>
+        :root {
+            --color-canvas: #f5f7fa;
+            --color-surface: #ffffff;
+            --color-surface-raised: #eef1f7;
+            --color-ink: #0f172a;
+            --color-ink-muted: #64748b;
+            --color-ink-faint: #cbd5e1;
+            --color-rule: #e2e8f0;
+            --color-accent: #0052cc;
+            --color-accent-ink: #ffffff;
+            --color-warning: #d97706;
+            --color-success: #16a34a;
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-canvas);
+            color: var(--color-ink);
+        }
+
+        .page {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-8);
+        }
+
+        .page-header {
+            margin-bottom: var(--space-8);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--space-4);
+        }
+
+        .page-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: var(--space-2);
+        }
+
+        .view-button {
+            padding: 8px var(--space-4);
+            border: 1px solid var(--color-rule);
+            background-color: var(--color-surface-raised);
+            color: var(--color-ink-muted);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 150ms ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .view-button svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2px;
+        }
+
+        .view-button:hover {
+            border-color: var(--color-accent);
+            background-color: white;
+        }
+
+        .view-button.active {
+            background-color: var(--color-accent);
+            color: var(--color-accent-ink);
+            border-color: var(--color-accent);
+        }
+
+        .board-container {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: var(--space-6);
+            overflow-x: auto;
+            padding-bottom: var(--space-4);
+        }
+
+        .column {
+            min-width: 280px;
+            background-color: var(--color-canvas);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+        }
+
+        .column-header {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--color-ink-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--space-4);
+            padding-bottom: var(--space-3);
+            border-bottom: 2px solid var(--color-rule);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .column-count {
+            font-size: 11px;
+            color: var(--color-ink-faint);
+            background-color: var(--color-surface);
+            padding: var(--space-1) var(--space-2);
+            border-radius: var(--radius-sm);
+        }
+
+        .card-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+        }
+
+        .card {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            cursor: pointer;
+            transition: all 150ms ease;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+
+        .card:hover {
+            border-color: var(--color-accent);
+            box-shadow: 0 2px 8px rgba(0, 82, 204, 0.1);
+        }
+
+        .card-score {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--color-accent);
+        }
+
+        .card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--color-ink);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-buyer {
+            font-size: 11px;
+            color: var(--color-ink-muted);
+        }
+
+        .card-meta {
+            font-size: 11px;
+            color: var(--color-ink-faint);
+            padding-top: var(--space-2);
+            border-top: 1px solid var(--color-rule);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-2);
+        }
+
+        .card-owner {
+            width: 24px;
+            height: 24px;
+            background-color: var(--color-surface-raised);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--color-ink-muted);
+        }
+
+        .card-deadline {
+            font-size: 11px;
+            color: var(--color-warning);
+            font-weight: 500;
+        }
+
+        .card-status {
+            font-size: 11px;
+            color: var(--color-success);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: var(--space-1);
+        }
+
+        .card-status svg {
+            width: 12px;
+            height: 12px;
+            stroke-width: 2px;
+        }
+
+        .add-card {
+            padding: var(--space-4);
+            border: 2px dashed var(--color-rule);
+            border-radius: var(--radius-md);
+            text-align: center;
+            color: var(--color-ink-faint);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 150ms ease;
+        }
+
+        .add-card:hover {
+            border-color: var(--color-accent);
+            background-color: rgba(0, 82, 204, 0.02);
+            color: var(--color-accent);
+        }
+
+        /* List View */
+        .list-view {
+            display: none;
+        }
+
+        .list-view.active {
+            display: block;
+        }
+
+        .list-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .list-table thead {
+            background-color: var(--color-canvas);
+            border-bottom: 1px solid var(--color-rule);
+        }
+
+        .list-table th {
+            padding: var(--space-4) var(--space-6);
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--color-ink-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .list-table td {
+            padding: var(--space-4) var(--space-6);
+            border-bottom: 1px solid var(--color-rule);
+            font-size: 13px;
+            color: var(--color-ink);
+        }
+
+        .list-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .list-table tbody tr:hover {
+            background-color: var(--color-surface-raised);
+        }
+
+        .stage-badge {
+            display: inline-block;
+            padding: var(--space-1) var(--space-3);
+            background-color: var(--color-surface-raised);
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--color-ink-muted);
+        }
+
+        .stage-badge.pursuing {
+            background-color: rgba(0, 82, 204, 0.1);
+            color: var(--color-accent);
+        }
+
+        .stage-badge.submitted {
+            background-color: rgba(22, 163, 74, 0.1);
+            color: var(--color-success);
+        }
+
+        .status-note {
+            background-color: var(--color-canvas);
+            border-left: 3px solid var(--color-warning);
+            padding: var(--space-4) var(--space-5);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            color: var(--color-warning);
+            margin-top: var(--space-6);
+            display: none;
+        }
+
+        .status-note.visible {
+            display: flex;
+            align-items: start;
+            gap: var(--space-2);
+        }
+
+        .status-note svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .state-controls {
+            position: fixed;
+            bottom: var(--space-8);
+            left: var(--space-8);
+            background: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            display: flex;
+            gap: var(--space-2);
+            flex-wrap: wrap;
+            max-width: 400px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+        }
+
+        .state-button {
+            padding: var(--space-2) var(--space-3);
+            background: var(--color-canvas);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 150ms ease;
+            font-weight: 500;
+        }
+
+        .state-button:hover {
+            background: var(--color-surface-raised);
+            border-color: var(--color-accent);
+        }
+
+        .state-button.active {
+            background: var(--color-accent);
+            color: white;
+            border-color: var(--color-accent);
+        }
+
+        @media (max-width: 1024px) {
+            .board-container {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .column {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="page-header">
+            <h1 class="page-title">Pipeline</h1>
+            <div class="view-toggle">
+                <button class="view-button active" onclick="switchView('board')"><svg data-lucide="bar-chart-3"></svg> Board</button>
+                <button class="view-button" onclick="switchView('list')"><svg data-lucide="list"></svg> List</button>
+            </div>
+        </div>
+
+        <!-- Board View -->
+        <div id="boardView" class="board-container">
+            <!-- New Column -->
+            <div class="column">
+                <div class="column-header">
+                    <span>New</span>
+                    <span class="column-count">2</span>
+                </div>
+                <div class="card-list">
+                    <div class="card">
+                        <div class="card-score">87</div>
+                        <div class="card-title">Cloud case management platform</div>
+                        <div class="card-buyer">Ministry of Health</div>
+                        <div class="card-meta">
+                            <div class="card-owner">A</div>
+                            <div class="card-deadline">28 Sep</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-score">84</div>
+                        <div class="card-title">Mobile service platform</div>
+                        <div class="card-buyer">State Bank</div>
+                        <div class="card-meta">
+                            <div class="card-owner">A</div>
+                            <div class="card-deadline">02 Oct</div>
+                        </div>
+                    </div>
+                    <div class="add-card">+ Add</div>
+                </div>
+            </div>
+
+            <!-- Reviewing Column -->
+            <div class="column">
+                <div class="column-header">
+                    <span>Reviewing</span>
+                    <span class="column-count">1</span>
+                </div>
+                <div class="card-list">
+                    <div class="card">
+                        <div class="card-score">73</div>
+                        <div class="card-title">Data integration support</div>
+                        <div class="card-buyer">Transport Authority</div>
+                        <div class="card-meta">
+                            <div class="card-owner">B</div>
+                            <div class="card-deadline">18 Sep</div>
+                        </div>
+                    </div>
+                    <div class="add-card">+ Add</div>
+                </div>
+            </div>
+
+            <!-- Pursuing Column -->
+            <div class="column">
+                <div class="column-header">
+                    <span>Pursuing</span>
+                    <span class="column-count">3</span>
+                </div>
+                <div class="card-list">
+                    <div class="card">
+                        <div class="card-score">91</div>
+                        <div class="card-title">Healthcare platform (Phase 2)</div>
+                        <div class="card-buyer">Health Ministry</div>
+                        <div class="card-meta">
+                            <div class="card-owner">A</div>
+                            <div class="card-deadline">10 Oct</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-score">88</div>
+                        <div class="card-title">Supply chain visibility</div>
+                        <div class="card-buyer">Commerce Ministry</div>
+                        <div class="card-meta">
+                            <div class="card-owner">C</div>
+                            <div class="card-deadline">15 Oct</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-score">82</div>
+                        <div class="card-title">Digital identity (Phase 3)</div>
+                        <div class="card-buyer">Digital Economy Office</div>
+                        <div class="card-meta">
+                            <div class="card-owner">A</div>
+                            <div class="card-deadline">20 Oct</div>
+                        </div>
+                    </div>
+                    <div class="add-card">+ Add</div>
+                </div>
+            </div>
+
+            <!-- Submitted Column -->
+            <div class="column">
+                <div class="column-header">
+                    <span>Submitted</span>
+                    <span class="column-count">2</span>
+                </div>
+                <div class="card-list">
+                    <div class="card">
+                        <div class="card-score">85</div>
+                        <div class="card-title">E-learning platform (2024)</div>
+                        <div class="card-buyer">Education Ministry</div>
+                        <div class="card-meta">
+                            <div class="card-owner">B</div>
+                            <div class="card-status"><svg data-lucide="check-circle"></svg> Bid sent</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-score">79</div>
+                        <div class="card-title">Tourism portal redesign</div>
+                        <div class="card-buyer">Tourism Board</div>
+                        <div class="card-meta">
+                            <div class="card-owner">C</div>
+                            <div class="card-status"><svg data-lucide="check-circle"></svg> Submitted</div>
+                        </div>
+                    </div>
+                    <div class="add-card">+ Add</div>
+                </div>
+            </div>
+
+            <!-- Won Column -->
+            <div class="column">
+                <div class="column-header">
+                    <span>Won</span>
+                    <span class="column-count">1</span>
+                </div>
+                <div class="card-list">
+                    <div class="card">
+                        <div class="card-score">92</div>
+                        <div class="card-title">Police case management system</div>
+                        <div class="card-buyer">Law Enforcement</div>
+                        <div class="card-meta">
+                            <div class="card-owner">A</div>
+                            <div class="card-status"><svg data-lucide="gift"></svg> Contract</div>
+                        </div>
+                    </div>
+                    <div class="add-card">+ Add</div>
+                </div>
+            </div>
+
+            <!-- Lost Column -->
+            <div class="column">
+                <div class="column-header">
+                    <span>Lost</span>
+                    <span class="column-count">1</span>
+                </div>
+                <div class="card-list">
+                    <div class="card">
+                        <div class="card-score">68</div>
+                        <div class="card-title">Legacy system migration</div>
+                        <div class="card-buyer">Bank Holdings</div>
+                        <div class="card-meta">
+                            <div class="card-owner">B</div>
+                            <div style="font-size: 11px; color: var(--color-ink-faint);">Awarded to other</div>
+                        </div>
+                    </div>
+                    <div class="add-card">+ Add</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- List View -->
+        <div id="listView" class="list-view">
+            <table class="list-table">
+                <thead>
+                    <tr>
+                        <th>Tender</th>
+                        <th>Stage</th>
+                        <th>Buyer</th>
+                        <th>Score</th>
+                        <th>Owner</th>
+                        <th>Deadline</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Cloud case management platform</strong></td>
+                        <td><span class="stage-badge pursuing">Pursuing</span></td>
+                        <td>Ministry of Health</td>
+                        <td><strong>87</strong></td>
+                        <td>You</td>
+                        <td>28 Sep</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mobile service platform</strong></td>
+                        <td><span class="stage-badge">New</span></td>
+                        <td>State Bank</td>
+                        <td><strong>84</strong></td>
+                        <td>You</td>
+                        <td>02 Oct</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Data integration support</strong></td>
+                        <td><span class="stage-badge">Reviewing</span></td>
+                        <td>Transport Authority</td>
+                        <td><strong>73</strong></td>
+                        <td>Bob</td>
+                        <td>18 Sep</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Healthcare platform (Phase 2)</strong></td>
+                        <td><span class="stage-badge pursuing">Pursuing</span></td>
+                        <td>Health Ministry</td>
+                        <td><strong>91</strong></td>
+                        <td>You</td>
+                        <td>10 Oct</td>
+                    </tr>
+                    <tr>
+                        <td><strong>E-learning platform (2024)</strong></td>
+                        <td><span class="stage-badge submitted">Submitted</span></td>
+                        <td>Education Ministry</td>
+                        <td><strong>85</strong></td>
+                        <td>Bob</td>
+                        <td>12 Oct</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Police case management system</strong></td>
+                        <td><span class="stage-badge" style="background-color: rgba(22, 163, 74, 0.1); color: var(--color-success);">Won</span></td>
+                        <td>Law Enforcement</td>
+                        <td><strong>92</strong></td>
+                        <td>You</td>
+                        <td>05 Sep</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="status-note visible">
+            <svg data-lucide="pin"></svg>
+            <span><strong>Note:</strong> This is a lightweight pursuit workspace. Full CRM integration (proposal/timeline links, detailed notes, collaborators) is planned for a future release.</span>
+        </div>
+    </div>
+
+    <!-- State Toggle Controls -->
+    <div class="state-controls">
+        <button class="state-button active" onclick="switchView('board')">Board view</button>
+        <button class="state-button" onclick="switchView('list')">List view</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        function switchView(view) {
+            const boardView = document.getElementById('boardView');
+            const listView = document.getElementById('listView');
+
+            if (view === 'board') {
+                boardView.style.display = 'grid';
+                listView.classList.remove('active');
+            } else {
+                boardView.style.display = 'none';
+                listView.classList.add('active');
+            }
+
+            document.querySelectorAll('.state-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>

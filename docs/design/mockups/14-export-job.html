@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export Jobs - Tender Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.css">
+    <style>
+        :root {
+            --color-canvas: #f5f7fa;
+            --color-surface: #ffffff;
+            --color-surface-raised: #eef1f7;
+            --color-ink: #0f172a;
+            --color-ink-muted: #64748b;
+            --color-ink-faint: #cbd5e1;
+            --color-rule: #e2e8f0;
+            --color-accent: #0052cc;
+            --color-accent-ink: #ffffff;
+            --color-success: #16a34a;
+            --color-warning: #d97706;
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-canvas);
+            color: var(--color-ink);
+        }
+
+        .page {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--space-8);
+        }
+
+        .page-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: var(--space-8);
+        }
+
+        .job-card {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-6);
+            margin-bottom: var(--space-6);
+        }
+
+        .job-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: var(--space-6);
+        }
+
+        .job-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: var(--space-2);
+        }
+
+        .job-meta {
+            font-size: 13px;
+            color: var(--color-ink-muted);
+            margin-bottom: var(--space-4);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-processing {
+            background-color: rgba(217, 119, 6, 0.1);
+            color: var(--color-warning);
+        }
+
+        .status-complete {
+            background-color: rgba(22, 163, 74, 0.1);
+            color: var(--color-success);
+        }
+
+        .status-badge svg {
+            width: 14px;
+            height: 14px;
+            stroke-width: 2px;
+        }
+
+        .progress-section {
+            margin-bottom: var(--space-6);
+        }
+
+        .progress-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--color-ink-muted);
+            margin-bottom: var(--space-2);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: var(--color-canvas);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--color-warning);
+            width: 65%;
+            transition: width 300ms ease;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: var(--color-ink-muted);
+            margin-top: var(--space-1);
+        }
+
+        .job-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-6);
+            margin-bottom: var(--space-6);
+            padding-bottom: var(--space-6);
+            border-bottom: 1px solid var(--color-rule);
+        }
+
+        .detail-field {
+            font-size: 13px;
+        }
+
+        .detail-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--color-ink-faint);
+            text-transform: uppercase;
+            margin-bottom: var(--space-1);
+        }
+
+        .detail-value {
+            color: var(--color-ink);
+            font-weight: 500;
+        }
+
+        .job-actions {
+            display: flex;
+            gap: var(--space-3);
+        }
+
+        .button {
+            padding: var(--space-3) var(--space-4);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 150ms ease;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .button-primary {
+            background-color: var(--color-accent);
+            color: var(--color-accent-ink);
+            border-color: var(--color-accent);
+        }
+
+        .button-primary:hover {
+            background-color: #0043a8;
+        }
+
+        .button-secondary {
+            background-color: var(--color-surface-raised);
+            color: var(--color-ink);
+        }
+
+        .button-secondary:hover {
+            background-color: var(--color-canvas);
+        }
+
+        .button svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--space-12);
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            color: var(--color-ink-faint);
+        }
+
+        .empty-state svg {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto var(--space-4);
+            stroke-width: 1.5px;
+        }
+
+        .info-box {
+            background-color: rgba(0, 82, 204, 0.05);
+            border: 1px solid rgba(0, 82, 204, 0.2);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            margin-bottom: var(--space-8);
+            display: flex;
+            gap: var(--space-3);
+        }
+
+        .info-box svg {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2px;
+            color: var(--color-accent);
+            flex-shrink: 0;
+        }
+
+        .info-box-text {
+            font-size: 13px;
+            color: var(--color-ink-muted);
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <h1 class="page-title">Export Jobs</h1>
+
+        <div class="info-box">
+            <svg data-lucide="info"></svg>
+            <div class="info-box-text">
+                Export jobs run asynchronously. You can close this page and we'll notify you when the file is ready to download. Large exports may take several minutes.
+            </div>
+        </div>
+
+        <!-- Processing Job -->
+        <div class="job-card">
+            <div class="job-header">
+                <div>
+                    <div class="job-title">Inbox opportunities (14 items)</div>
+                    <div class="job-meta">Started 2 min ago</div>
+                </div>
+                <div class="status-badge status-processing">
+                    <svg data-lucide="loader" style="animation: spin 1s linear infinite;"></svg>
+                    Processing
+                </div>
+            </div>
+
+            <div class="progress-section">
+                <div class="progress-label">Exporting...</div>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <div class="progress-text">Extracting tender data: 9 of 14 complete</div>
+            </div>
+
+            <div class="job-details">
+                <div class="detail-field">
+                    <div class="detail-label">Format</div>
+                    <div class="detail-value">CSV</div>
+                </div>
+                <div class="detail-field">
+                    <div class="detail-label">Estimated time remaining</div>
+                    <div class="detail-value">1 min</div>
+                </div>
+                <div class="detail-field">
+                    <div class="detail-label">Export scope</div>
+                    <div class="detail-value">Inbox (filtered)</div>
+                </div>
+                <div class="detail-field">
+                    <div class="detail-label">Requested by</div>
+                    <div class="detail-value">you@company.com</div>
+                </div>
+            </div>
+
+            <div class="job-actions">
+                <button class="button button-secondary">
+                    <svg data-lucide="x"></svg>
+                    Cancel
+                </button>
+            </div>
+        </div>
+
+        <!-- Complete Job -->
+        <div class="job-card">
+            <div class="job-header">
+                <div>
+                    <div class="job-title">Recent tenders (247 items)</div>
+                    <div class="job-meta">Completed 15 min ago</div>
+                </div>
+                <div class="status-badge status-complete">
+                    <svg data-lucide="check-circle"></svg>
+                    Ready
+                </div>
+            </div>
+
+            <div class="job-details">
+                <div class="detail-field">
+                    <div class="detail-label">Format</div>
+                    <div class="detail-value">XLSX (Excel)</div>
+                </div>
+                <div class="detail-field">
+                    <div class="detail-label">File size</div>
+                    <div class="detail-value">3.2 MB</div>
+                </div>
+                <div class="detail-field">
+                    <div class="detail-label">Export scope</div>
+                    <div class="detail-value">Explore (last 30 days)</div>
+                </div>
+                <div class="detail-field">
+                    <div class="detail-label">Requested by</div>
+                    <div class="detail-value">you@company.com</div>
+                </div>
+            </div>
+
+            <div class="job-actions">
+                <button class="button button-primary">
+                    <svg data-lucide="download"></svg>
+                    Download File
+                </button>
+                <button class="button button-secondary">
+                    <svg data-lucide="trash-2"></svg>
+                    Delete
+                </button>
+            </div>
+        </div>
+
+        <!-- Archived job -->
+        <div class="job-card" style="opacity: 0.7;">
+            <div class="job-header">
+                <div>
+                    <div class="job-title">Pipeline opportunities (5 items)</div>
+                    <div class="job-meta">Completed 3 days ago</div>
+                </div>
+                <div class="status-badge" style="background-color: var(--color-surface-raised); color: var(--color-ink-muted);">
+                    <svg data-lucide="check-circle"></svg>
+                    Expired
+                </div>
+            </div>
+
+            <div style="font-size: 12px; color: var(--color-ink-muted);">File automatically deleted after 7 days. <a href="#" style="color: var(--color-accent); text-decoration: none;">Create new export</a></div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

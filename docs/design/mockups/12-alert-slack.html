@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slack Configuration - Tender Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.css">
+    <style>
+        :root {
+            --color-canvas: #f5f7fa;
+            --color-surface: #ffffff;
+            --color-surface-raised: #eef1f7;
+            --color-ink: #0f172a;
+            --color-ink-muted: #64748b;
+            --color-ink-faint: #cbd5e1;
+            --color-rule: #e2e8f0;
+            --color-accent: #0052cc;
+            --color-accent-ink: #ffffff;
+            --color-success: #16a34a;
+            --color-warning: #d97706;
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-canvas);
+            color: var(--color-ink);
+        }
+
+        .page {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: var(--space-8);
+        }
+
+        .page-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: var(--space-3);
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: var(--color-ink-muted);
+            margin-bottom: var(--space-8);
+        }
+
+        .form-section {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-6);
+            margin-bottom: var(--space-8);
+        }
+
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: var(--space-4);
+            color: var(--color-ink);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-6);
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: var(--space-2);
+            color: var(--color-ink);
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: var(--color-ink-muted);
+            margin-top: var(--space-1);
+        }
+
+        .input-group {
+            display: flex;
+            gap: var(--space-3);
+            align-items: center;
+        }
+
+        input[type="text"],
+        select {
+            flex: 1;
+            padding: 9px var(--space-3);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: var(--color-ink);
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.1);
+        }
+
+        .button {
+            padding: 9px var(--space-4);
+            background-color: var(--color-accent);
+            color: var(--color-accent-ink);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 150ms ease;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            white-space: nowrap;
+        }
+
+        .button svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2px;
+        }
+
+        .button:hover {
+            background-color: #0043a8;
+        }
+
+        .button-secondary {
+            background-color: var(--color-surface-raised);
+            color: var(--color-ink);
+        }
+
+        .button-secondary:hover {
+            background-color: var(--color-canvas);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1);
+            padding: var(--space-2) var(--space-3);
+            background-color: rgba(22, 163, 74, 0.1);
+            color: var(--color-success);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge svg {
+            width: 14px;
+            height: 14px;
+            stroke-width: 2px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-3);
+        }
+
+        input[type="checkbox"] {
+            margin-top: 3px;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            flex: 1;
+            cursor: pointer;
+        }
+
+        .checkbox-label-title {
+            font-weight: 500;
+            color: var(--color-ink);
+            margin-bottom: var(--space-1);
+        }
+
+        .checkbox-label-desc {
+            font-size: 12px;
+            color: var(--color-ink-muted);
+        }
+
+        .preview-box {
+            background-color: var(--color-canvas);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            font-size: 12px;
+            line-height: 1.6;
+            color: var(--color-ink-muted);
+        }
+
+        .preview-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--color-ink-faint);
+            text-transform: uppercase;
+            margin-bottom: var(--space-2);
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <h1 class="page-title">Slack Integration</h1>
+        <p class="page-subtitle">Configure how tender alerts are delivered to your Slack workspace</p>
+
+        <!-- Connection Section -->
+        <div class="form-section">
+            <div class="section-title">Workspace Connection</div>
+
+            <div class="form-group">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <label>Connected workspace</label>
+                        <div class="help-text">Company Slack · workspace-name.slack.com</div>
+                    </div>
+                    <div class="status-badge">
+                        <svg data-lucide="check-circle"></svg>
+                        Connected
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <button class="button-secondary" onclick="alert('Reconnect Slack')">
+                    <svg data-lucide="refresh-cw"></svg>
+                    Reconnect
+                </button>
+            </div>
+        </div>
+
+        <!-- Delivery Channels -->
+        <div class="form-section">
+            <div class="section-title">Delivery Channels</div>
+
+            <div class="form-group">
+                <label>Primary channel for tender alerts</label>
+                <select>
+                    <option>#tenders</option>
+                    <option>#opportunities</option>
+                    <option>#new-leads</option>
+                    <option>Direct message (to you)</option>
+                </select>
+                <div class="help-text">Instant and digest alerts will post here unless overridden by saved search rules</div>
+            </div>
+
+            <div class="form-group">
+                <label>Thread management</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="thread-updates" checked>
+                        <label for="thread-updates" class="checkbox-label">
+                            <div class="checkbox-label-title">Group updates by tender</div>
+                            <div class="checkbox-label-desc">Changes to the same tender (e.g., deadline extended) will reply in a thread instead of creating new messages</div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert Preferences -->
+        <div class="form-section">
+            <div class="section-title">Alert Preferences</div>
+
+            <div class="form-group">
+                <label>Quiet hours (no instant alerts)</label>
+                <div class="input-group">
+                    <input type="text" placeholder="20:00" value="20:00" style="max-width: 100px;">
+                    <span style="color: var(--color-ink-muted);">to</span>
+                    <input type="text" placeholder="08:00" value="08:00" style="max-width: 100px;">
+                </div>
+                <div class="help-text">Instant alerts will be queued and sent as morning digest. Digest schedules are not affected.</div>
+            </div>
+
+            <div class="form-group">
+                <label>Message detail level</label>
+                <select>
+                    <option>Standard (title + score + buyer + deadline)</option>
+                    <option>Compact (title + score only)</option>
+                    <option>Full (includes summary and why it fits)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Include message reactions</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="emoji-reactions" checked>
+                        <label for="emoji-reactions" class="checkbox-label">
+                            <div class="checkbox-label-title">Add quick actions</div>
+                            <div class="checkbox-label-desc">React with 👍 to save, 👎 to dismiss. Reactions sync to Tender Intelligence within 5 minutes.</div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Message Preview -->
+        <div class="form-section">
+            <div class="section-title">Preview</div>
+            <div class="preview-box">
+                <div class="preview-title">Example message (standard detail)</div>
+                <div style="border-left: 3px solid var(--color-accent); padding-left: var(--space-3);">
+                    <div style="font-weight: 600; color: var(--color-ink);">Cloud case management — 91 Strong match</div>
+                    <div style="margin-top: var(--space-1);">Ministry of Health · 28 Sep (5 days)</div>
+                    <div style="margin-top: var(--space-2); font-size: 11px; color: var(--color-ink-faint);">React · AWS · Cloud infrastructure</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div style="display: flex; gap: var(--space-3); margin-top: var(--space-8);">
+            <button class="button">
+                <svg data-lucide="save"></svg>
+                Save Settings
+            </button>
+            <button class="button-secondary">
+                <svg data-lucide="x"></svg>
+                Cancel
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

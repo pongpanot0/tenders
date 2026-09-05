@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin: Source Health - Tender Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.css">
+    <style>
+        :root {
+            --color-canvas: #f5f7fa;
+            --color-surface: #ffffff;
+            --color-surface-raised: #eef1f7;
+            --color-ink: #0f172a;
+            --color-ink-muted: #64748b;
+            --color-ink-faint: #cbd5e1;
+            --color-rule: #e2e8f0;
+            --color-accent: #0052cc;
+            --color-accent-ink: #ffffff;
+            --color-danger: #dc2626;
+            --color-warning: #d97706;
+            --color-success: #16a34a;
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-canvas);
+            color: var(--color-ink);
+        }
+
+        .admin-banner {
+            background-color: var(--color-danger);
+            color: var(--color-accent-ink);
+            padding: var(--space-4) var(--space-8);
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .admin-banner svg {
+            width: 18px;
+            height: 18px;
+            stroke-width: 2px;
+            flex-shrink: 0;
+        }
+
+        .page {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-8);
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-8);
+            flex-wrap: wrap;
+            gap: var(--space-4);
+        }
+
+        .header-section {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+        }
+
+        .admin-label {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1);
+            background-color: var(--color-danger);
+            color: var(--color-accent-ink);
+            padding: var(--space-1) var(--space-3);
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .admin-label svg {
+            width: 12px;
+            height: 12px;
+            stroke-width: 2px;
+        }
+
+        .page-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .controls {
+            display: flex;
+            gap: var(--space-3);
+        }
+
+        .button {
+            padding: var(--space-3) var(--space-4);
+            background-color: var(--color-surface-raised);
+            color: var(--color-ink);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 150ms ease;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .button svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2px;
+        }
+
+        .button:hover {
+            border-color: var(--color-accent);
+            background-color: white;
+        }
+
+        .source-table {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1.2fr 1.2fr 1fr auto;
+            gap: var(--space-6);
+            padding: var(--space-5) var(--space-6);
+            border-bottom: 1px solid var(--color-rule);
+            align-items: center;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .table-header {
+            background-color: var(--color-canvas);
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--color-ink-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .source-name {
+            font-weight: 600;
+            color: var(--color-ink);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1);
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background-color: rgba(22, 163, 74, 0.1);
+            color: var(--color-success);
+        }
+
+        .status-error {
+            background-color: rgba(220, 38, 38, 0.1);
+            color: var(--color-danger);
+        }
+
+        .status-badge svg {
+            width: 14px;
+            height: 14px;
+            stroke-width: 2px;
+        }
+
+        .metrics {
+            font-size: 13px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--color-ink-muted);
+        }
+
+        .freshness {
+            font-size: 13px;
+            color: var(--color-ink-muted);
+        }
+
+        .freshness.delayed {
+            color: var(--color-warning);
+            font-weight: 500;
+        }
+
+        .action-menu {
+            position: relative;
+        }
+
+        .action-button {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--color-rule);
+            background-color: var(--color-surface);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 150ms ease;
+        }
+
+        .action-button:hover {
+            border-color: var(--color-accent);
+            background-color: var(--color-surface-raised);
+        }
+
+        .action-button svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-banner">
+        <svg data-lucide="alert-triangle"></svg>
+        Admin environment — restricted access. Do not navigate here from customer navigation.
+    </div>
+
+    <div class="page">
+        <div class="page-header">
+            <div class="header-section">
+                <div class="admin-label">
+                    <svg data-lucide="shield"></svg>
+                    Admin
+                </div>
+                <div>
+                    <h1 class="page-title">Source Health</h1>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="button">
+                    <svg data-lucide="refresh-cw"></svg>
+                    Refresh
+                </button>
+            </div>
+        </div>
+
+        <div class="source-table">
+            <div class="table-row table-header">
+                <div>Source</div>
+                <div>Policy</div>
+                <div>Last Fetch</div>
+                <div>Records/Run</div>
+                <div>Error Rate</div>
+                <div></div>
+            </div>
+
+            <div class="table-row">
+                <div class="source-name">EU TED</div>
+                <div class="status-badge status-active">
+                    <svg data-lucide="check-circle"></svg>
+                    Active
+                </div>
+                <div class="freshness">12 min ago ✓</div>
+                <div class="metrics">2,847 items</div>
+                <div class="metrics">0.02%</div>
+                <div class="action-menu">
+                    <button class="action-button" title="Options" onclick="alert('Source options: Run now, Enable/Disable, View logs, Configure parser')">
+                        <svg data-lucide="more-vertical"></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-row">
+                <div class="source-name">National e-Procurement Portal (SG)</div>
+                <div class="status-badge status-active">
+                    <svg data-lucide="check-circle"></svg>
+                    Active
+                </div>
+                <div class="freshness">8 min ago ✓</div>
+                <div class="metrics">153 items</div>
+                <div class="metrics">0.00%</div>
+                <div class="action-menu">
+                    <button class="action-button" title="Options">
+                        <svg data-lucide="more-vertical"></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-row">
+                <div class="source-name">Government Procurement (TH)</div>
+                <div class="status-badge status-active">
+                    <svg data-lucide="check-circle"></svg>
+                    Active
+                </div>
+                <div class="freshness">15 min ago ✓</div>
+                <div class="metrics">421 items</div>
+                <div class="metrics">0.15%</div>
+                <div class="action-menu">
+                    <button class="action-button" title="Options">
+                        <svg data-lucide="more-vertical"></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-row">
+                <div class="source-name">Australian Contracts Finder</div>
+                <div class="status-badge status-error">
+                    <svg data-lucide="x-circle"></svg>
+                    Failed
+                </div>
+                <div class="freshness delayed">2 hours ago (breach)</div>
+                <div class="metrics">last: 89 items</div>
+                <div class="metrics">12.5%</div>
+                <div class="action-menu">
+                    <button class="action-button" title="Options" style="color: var(--color-danger);">
+                        <svg data-lucide="more-vertical"></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-row">
+                <div class="source-name">World Bank Procurement</div>
+                <div class="status-badge status-active">
+                    <svg data-lucide="check-circle"></svg>
+                    Active
+                </div>
+                <div class="freshness">22 min ago ✓</div>
+                <div class="metrics">356 items</div>
+                <div class="metrics">0.08%</div>
+                <div class="action-menu">
+                    <button class="action-button" title="Options">
+                        <svg data-lucide="more-vertical"></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: var(--space-8); display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8);">
+            <div style="background-color: var(--color-surface); border: 1px solid var(--color-rule); border-radius: var(--radius-md); padding: var(--space-6);">
+                <h3 style="font-family: 'Space Grotesk', sans-serif; font-size: 14px; margin-bottom: var(--space-3);">Dashboard</h3>
+                <div style="display: grid; gap: var(--space-4); font-size: 13px;">
+                    <div>
+                        <div style="color: var(--color-ink-muted); margin-bottom: var(--space-1);">Active sources</div>
+                        <div style="font-size: 20px; font-weight: 700; color: var(--color-success);">5 / 5</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--color-ink-muted); margin-bottom: var(--space-1);">Avg. freshness</div>
+                        <div style="font-size: 18px; font-weight: 700; color: var(--color-ink);">12 min</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--color-ink-muted); margin-bottom: var(--space-1);">SLA status</div>
+                        <div style="font-size: 14px; font-weight: 600; color: var(--color-warning);">1 source in breach</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background-color: var(--color-surface); border: 1px solid var(--color-rule); border-radius: var(--radius-md); padding: var(--space-6);">
+                <h3 style="font-family: 'Space Grotesk', sans-serif; font-size: 14px; margin-bottom: var(--space-3);">Quick actions</h3>
+                <div style="display: flex; flex-direction: column; gap: var(--space-2);">
+                    <button class="button" style="width: 100%; justify-content: flex-start;">
+                        <svg data-lucide="play-circle"></svg>
+                        Run all sources now
+                    </button>
+                    <button class="button" style="width: 100%; justify-content: flex-start;">
+                        <svg data-lucide="log"></svg>
+                        View system logs
+                    </button>
+                    <button class="button" style="width: 100%; justify-content: flex-start;">
+                        <svg data-lucide="settings"></svg>
+                        Source config
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

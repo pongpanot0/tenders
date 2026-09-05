@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onboarding - Tender Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.css">
+    <style>
+        :root {
+            --color-canvas: #f5f7fa;
+            --color-surface: #ffffff;
+            --color-surface-raised: #eef1f7;
+            --color-ink: #0f172a;
+            --color-ink-muted: #64748b;
+            --color-ink-faint: #cbd5e1;
+            --color-rule: #e2e8f0;
+            --color-accent: #0052cc;
+            --color-accent-ink: #ffffff;
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-canvas);
+            color: var(--color-ink);
+        }
+
+        .header {
+            background-color: var(--color-surface);
+            border-bottom: 1px solid var(--color-rule);
+            padding: var(--space-6) var(--space-8);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--color-accent);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .logo svg {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2px;
+        }
+
+        .progress-rail {
+            display: flex;
+            gap: var(--space-2);
+            align-items: center;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: 12px;
+            color: var(--color-ink-faint);
+            position: relative;
+        }
+
+        .progress-step.active {
+            color: var(--color-accent);
+            font-weight: 600;
+        }
+
+        .progress-step.complete {
+            color: var(--color-ink-muted);
+        }
+
+        .progress-step::after {
+            content: '';
+            width: 12px;
+            height: 1px;
+            background-color: var(--color-rule);
+            position: absolute;
+            right: -12px;
+        }
+
+        .progress-step:last-child::after {
+            display: none;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: var(--space-8);
+            padding: var(--space-8);
+            min-height: calc(100vh - 80px);
+        }
+
+        .form-panel {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-8);
+            max-width: 640px;
+        }
+
+        .form-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: var(--space-4);
+            color: var(--color-ink);
+        }
+
+        .form-description {
+            font-size: 14px;
+            color: var(--color-ink-muted);
+            margin-bottom: var(--space-8);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-6);
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: var(--space-2);
+            color: var(--color-ink);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 11px var(--space-4);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: var(--color-ink);
+            transition: border-color 150ms ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.1);
+        }
+
+        .chip-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-3);
+            margin-bottom: var(--space-4);
+        }
+
+        .chip {
+            padding: var(--space-2) var(--space-4);
+            background-color: var(--color-surface-raised);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 150ms ease;
+            white-space: nowrap;
+        }
+
+        .chip:hover {
+            border-color: var(--color-accent);
+            background-color: rgba(0, 82, 204, 0.05);
+        }
+
+        .chip.selected {
+            background-color: var(--color-accent);
+            color: var(--color-accent-ink);
+            border-color: var(--color-accent);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: var(--space-4);
+            margin-top: var(--space-8);
+            border-top: 1px solid var(--color-rule);
+            padding-top: var(--space-6);
+        }
+
+        button {
+            padding: 12px var(--space-6);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 150ms ease;
+        }
+
+        .button-primary {
+            background-color: var(--color-accent);
+            color: var(--color-accent-ink);
+            border-color: var(--color-accent);
+            flex: 1;
+        }
+
+        .button-primary:hover {
+            background-color: #0043a8;
+        }
+
+        .button-secondary {
+            background-color: var(--color-surface);
+            color: var(--color-ink);
+            flex: 1;
+        }
+
+        .button-secondary:hover {
+            background-color: var(--color-surface-raised);
+        }
+
+        /* Profile Preview Panel */
+        .preview-panel {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-6);
+            height: fit-content;
+            position: sticky;
+            top: var(--space-8);
+        }
+
+        .preview-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: var(--space-4);
+            color: var(--color-ink);
+        }
+
+        .preview-section {
+            margin-bottom: var(--space-6);
+            padding-bottom: var(--space-4);
+            border-bottom: 1px solid var(--color-rule);
+        }
+
+        .preview-section:last-child {
+            border-bottom: none;
+        }
+
+        .preview-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--color-ink-faint);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--space-2);
+        }
+
+        .preview-value {
+            font-size: 13px;
+            color: var(--color-ink);
+            line-height: 1.5;
+        }
+
+        .preview-empty {
+            font-size: 13px;
+            color: var(--color-ink-faint);
+            font-style: italic;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background-color: rgba(217, 119, 6, 0.1);
+            color: #d97706;
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: var(--space-4);
+        }
+
+        .status-badge.complete {
+            background-color: rgba(22, 163, 74, 0.1);
+            color: #16a34a;
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+
+            .preview-panel {
+                position: relative;
+                top: auto;
+            }
+        }
+
+        .state-controls {
+            position: fixed;
+            bottom: var(--space-8);
+            left: var(--space-8);
+            background: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            display: flex;
+            gap: var(--space-2);
+            flex-wrap: wrap;
+            max-width: 400px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+        }
+
+        .state-button {
+            padding: var(--space-2) var(--space-3);
+            background: var(--color-canvas);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 150ms ease;
+            font-weight: 500;
+        }
+
+        .state-button:hover {
+            background: var(--color-surface-raised);
+            border-color: var(--color-accent);
+        }
+
+        .state-button.active {
+            background: var(--color-accent);
+            color: white;
+            border-color: var(--color-accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo"><svg data-lucide="target"></svg> Tender Intelligence</div>
+            <div class="progress-rail">
+                <div class="progress-step complete">Company</div>
+                <div class="progress-step active">Capabilities</div>
+                <div class="progress-step">Markets</div>
+                <div class="progress-step">Constraints</div>
+                <div class="progress-step">Alerts</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="form-panel">
+            <h2 class="form-title">What can your team build?</h2>
+            <p class="form-description">
+                Tell us your core services and key technologies. You can add custom services or learn from available matches.
+            </p>
+
+            <div class="form-group">
+                <label>Services</label>
+                <div class="chip-group">
+                    <div class="chip selected">Custom software <svg data-lucide="check" style="width: 14px; height: 14px; stroke-width: 2px; display: inline; margin-left: 4px;"></svg></div>
+                    <div class="chip">Mobile development</div>
+                    <div class="chip">Cloud infrastructure</div>
+                    <div class="chip">Data engineering</div>
+                    <div class="chip">QA & testing</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="tech">Primary technologies</label>
+                <input
+                    type="text"
+                    id="tech"
+                    placeholder="e.g., React, Node.js, AWS"
+                    value="React, Node.js, AWS"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="industry">Industries (optional)</label>
+                <input
+                    type="text"
+                    id="industry"
+                    placeholder="e.g., FinTech, SaaS, Healthcare"
+                >
+            </div>
+
+            <div class="form-actions">
+                <button class="button-secondary">Save and finish later</button>
+                <button class="button-primary">Next: Markets</button>
+            </div>
+        </div>
+
+        <div class="preview-panel">
+            <div class="preview-title">Your profile so far</div>
+
+            <div class="preview-section">
+                <div class="preview-label">Company</div>
+                <div class="preview-value">
+                    Acme Software<br>
+                    Singapore
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <div class="preview-label">Capabilities</div>
+                <div class="preview-value">
+                    Custom software<br>
+                    React, Node.js, AWS
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <div class="preview-label">Markets</div>
+                <div class="preview-empty">Not yet filled</div>
+            </div>
+
+            <div class="preview-section">
+                <div class="preview-label">Constraints</div>
+                <div class="preview-empty">Not yet filled</div>
+            </div>
+
+            <div class="status-badge">
+                Incomplete profile
+            </div>
+        </div>
+    </div>
+
+    <!-- State Toggle Controls -->
+    <div class="state-controls">
+        <button class="state-button active" onclick="showState('default')">Step 2: Capabilities</button>
+        <button class="state-button" onclick="showState('complete')">Step 5: Ready</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        function showState(state) {
+            const formTitle = document.querySelector('.form-title');
+            const statusBadge = document.querySelector('.status-badge');
+            const previewValues = document.querySelectorAll('.preview-value, .preview-empty');
+
+            if (state === 'complete') {
+                formTitle.textContent = 'Ready to start matching';
+                statusBadge.textContent = 'Profile ready to match';
+                statusBadge.classList.add('complete');
+
+                // Update preview to show all sections filled
+                previewValues.forEach(el => {
+                    if (el.classList.contains('preview-empty')) {
+                        const section = el.closest('.preview-section');
+                        const label = section.querySelector('.preview-label').textContent;
+                        el.classList.remove('preview-empty');
+                        if (label === 'Markets') {
+                            el.textContent = 'Singapore, Australia\nRemote, hybrid\nEnglish';
+                        } else if (label === 'Constraints') {
+                            el.textContent = 'Budget: $20k–$150k\nMin. 7 days to bid\nISO 27001';
+                        }
+                    }
+                });
+            } else {
+                formTitle.textContent = 'What can your team build?';
+                statusBadge.textContent = 'Incomplete profile';
+                statusBadge.classList.remove('complete');
+
+                // Revert to original incomplete state
+                const marketsSection = document.querySelector('.preview-section:nth-child(3) .preview-empty');
+                const constraintsSection = document.querySelector('.preview-section:nth-child(4) .preview-empty');
+                if (marketsSection) marketsSection.textContent = 'Not yet filled';
+                if (constraintsSection) constraintsSection.textContent = 'Not yet filled';
+            }
+
+            document.querySelectorAll('.state-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>
