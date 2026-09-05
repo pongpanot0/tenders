@@ -1,0 +1,22 @@
+{
+  "releases": [
+    {
+      "ocid": "ocds-abc-0001",
+      "id": "ocds-abc-0001-tender",
+      "date": "2026-09-01T00:00:00Z",
+      "tender": {
+        "id": "notice-1",
+        "title": "Case management software",
+        "description": "Supply of a case management platform.",
+        "value": { "amount": 100000, "currency": "GBP" },
+        "tenderPeriod": { "endDate": "2026-09-30T23:59:59Z" },
+        "items": [{ "classification": { "scheme": "CPV", "id": "72000000" } }]
+      },
+      "buyer": { "name": "Example Council" },
+      "parties": [
+        { "id": "buyer-1", "roles": ["buyer"], "name": "Example Council", "address": { "countryName": "United Kingdom" } }
+      ]
+    }
+  ],
+  "links": { "next": "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages?cursor=page2" }
+}
