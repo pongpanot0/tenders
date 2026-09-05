@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tender Intelligence - UI Mockups</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.css">
+    <style>
+        :root {
+            /* Color tokens */
+            --color-canvas: #f5f7fa;
+            --color-surface: #ffffff;
+            --color-surface-raised: #eef1f7;
+            --color-ink: #0f172a;
+            --color-ink-muted: #64748b;
+            --color-ink-faint: #cbd5e1;
+            --color-rule: #e2e8f0;
+            --color-rule-strong: #94a3b8;
+            --color-accent: #0052cc;
+            --color-accent-ink: #ffffff;
+            --color-success: #16a34a;
+            --color-warning: #d97706;
+            --color-danger: #dc2626;
+            --color-info: #0052cc;
+
+            /* Spacing */
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --space-10: 40px;
+            --space-12: 48px;
+
+            /* Radii */
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-canvas);
+            color: var(--color-ink);
+            line-height: 1.6;
+        }
+
+        .header {
+            background-color: var(--color-surface);
+            border-bottom: 1px solid var(--color-rule);
+            padding: var(--space-6) var(--space-8);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: var(--space-2);
+        }
+
+        .header p {
+            color: var(--color-ink-muted);
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-8);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: var(--space-8);
+            margin-top: var(--space-8);
+        }
+
+        .card {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-6);
+            text-decoration: none;
+            color: inherit;
+            transition: all 200ms ease;
+        }
+
+        .card:hover {
+            border-color: var(--color-accent);
+            box-shadow: 0 4px 12px rgba(0, 82, 204, 0.1);
+        }
+
+        .card h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: var(--space-3);
+            color: var(--color-accent);
+        }
+
+        .card p {
+            font-size: 14px;
+            color: var(--color-ink-muted);
+            margin-bottom: var(--space-4);
+        }
+
+        .link {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--color-accent);
+            text-decoration: none;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background-color: var(--color-surface-raised);
+            color: var(--color-ink-muted);
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: var(--space-3);
+        }
+
+        .status-badge.done {
+            background-color: rgba(22, 163, 74, 0.1);
+            color: var(--color-success);
+        }
+
+        .status-badge.in-progress {
+            background-color: rgba(217, 119, 6, 0.1);
+            color: var(--color-warning);
+        }
+
+        .status-badge.future {
+            background-color: rgba(0, 82, 204, 0.1);
+            color: var(--color-info);
+        }
+
+        section {
+            margin-bottom: var(--space-12);
+        }
+
+        section h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            margin-bottom: var(--space-6);
+        }
+
+        .section-intro {
+            background-color: rgba(0, 82, 204, 0.05);
+            border: 1px solid rgba(0, 82, 204, 0.2);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            margin-bottom: var(--space-6);
+            font-size: 13px;
+            color: var(--color-ink-muted);
+            line-height: 1.6;
+        }
+
+        .design-section {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-6);
+            margin-bottom: var(--space-8);
+        }
+
+        .design-section h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 16px;
+            margin-bottom: var(--space-4);
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-4);
+        }
+
+        .color-swatch {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .swatch-box {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-sm);
+        }
+
+        .swatch-label {
+            font-size: 13px;
+        }
+
+        .swatch-label strong {
+            display: block;
+            color: var(--color-ink);
+        }
+
+        .swatch-label code {
+            font-size: 11px;
+            color: var(--color-ink-faint);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .notes-list {
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--color-ink-muted);
+            padding-left: var(--space-6);
+        }
+
+        .notes-list li {
+            margin-bottom: var(--space-3);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Tender Intelligence UI Mockups</h1>
+        <p>Interactive visual prototypes — P0 (MVP), P1 (next release), and P2 (future) screens</p>
+    </div>
+
+    <div class="container">
+        <!-- P0 Screens -->
+        <section>
+            <h2>P0 Screens (MVP Release)</h2>
+            <div class="section-intro">
+                Ship with the first usable release. All screens use Lucide icons, full state coverage (default, loading, empty, error), and responsive behavior. Token spec: Cobalt theme, modern-minimal workbench.
+            </div>
+            <div class="grid">
+                <a href="01-signin.html" class="card">
+                    <h2>Sign in / Create Account</h2>
+                    <p>Authentication flow with email/Google option and SSO support. Includes error state validation.</p>
+                    <div class="status-badge done">Complete</div>
+                    <span class="link">View mockup <svg data-lucide="arrow-right" style="width: 16px; height: 16px;"></svg></span>
+                </a>
+
+                <a href="02-onboarding.html" class="card">
+                    <h2>Onboarding Wizard</h2>
+                    <p>Step-based company profile setup with live preview panel. Shows complete, ready, and reprocessing states.</p>
+                    <div class="status-badge done">Complete</div>
+                    <span class="link">View mockup <svg data-lucide="arrow-right" style="width: 16px; height: 16px;"></svg></span>
+                </a>
+
+                <a href="03-app-shell.html" class="card">
+                    <h2>App Shell</h2>
+                    <p>Desktop 3-zone workbench layout (sidebar + main + context panel) + mobile bottom navigation.</p>
+                    <div class="status-badge done">Complete</div>
+                    <span class="link">View mockup <svg data-lucide="arrow-right" style="width: 16px; height: 16px;"></svg></span>
+                </a>
+
+                <a href="04-inbox.html" class="card">
+                    <h2>Inbox</h2>
+                    <p>Recommended opportunities list with filters, scoring badge, fit tags, and detail side panel. Lucide icons throughout.</p>
+                    <div class="status-badge done">Complete</div>
+                    <span class="link">View mockup <svg data-lucide="arrow-right" style="width: 16px; height: 16px;"></svg></span>
+                </a>
+
+                <a href="05-tender-detail.html" class="card">
+                    <h2>Tender Detail</h2>
+                    <p>Full tender evaluation with Overview, Requirements, Documents, Activity, and Versions tabs. Score badge, risks, and evidence links.</p>
+                    <div class="status-badge done">Complete</div>
+                    <span class="link">View mockup <svg data-lucide="arrow-right" style="width: 16px; height: 16px;"></svg></span>
+                </a>
+
+                <a href="06-explore.html" class="card">
+                    <h2>Explore Catalogue</h2>
+                    <p>Full tender search with advanced filters, saved search capability, and sortable results table.</p>
+                    <div class="status-badge done">Complete</div>
+                    <span class="link">View mockup <svg data-lucide="arrow-right" style="width: 16px; height: 16px;"></svg></span>
+                </a>
+
+                <a href="07-alerts.html" class="card">
+                    <h2>Alerts Center</h2>
+                    <p>Activity feed of notifications with delivery channel badges, read state, and settings panel. Tab filters by type.</p>
+                    <div class="status-badge done">Complete</div>
+                    <span class="link">View mockup <svg data-lucide="arrow-right" style="width: 16px; height: 16px;"></svg></span>
+                </a>
+
+                <a href="08-pipeline.html" class="card">
+                    <h2>Pipeline Board</h2>
+                    <p>Lightweight pursuit workflow: Kanban columns (New, Reviewing, Pursuing, Submitted, Won, Lost) + list view.</p>
+                    <div class="status-badge done">Complete</div>
+                    <span class="link">View mockup <svg data-lucide="arrow-right" style="width: 16px; height: 16px;"></svg></span>
+                </a>
+            </div>
+        </section>
+
+        <!-- P1 Screens -->
+        <section>
+            <h2>P1 Screens (Next Release)</h2>
+            <div class="section-intro">
+                Build full-fidelity mockups for these features per spec section 15. All use Lucide icons and match P0 design tokens. Ready for early customer preview and engineering roadmap refinement.
+            </div>
+            <div class="grid">
+                <a href="09-pipeline-workspace.html" class="card">
+                    <h2>Pipeline Workspace</h2>
+                    <p>Expanded opportunity detail with persistent right context panel: owner/collaborators, next action date, internal notes, stage history.</p>
+                    <div class="status-badge done">Complete</div>
+                    <span class="link">View mockup <svg data-lucide="arrow-right" style="width: 16px; height: 16px;"></svg></span>
+                </a>
+
+                <a href="10-version-diff.html" class="card">
+                    <h2>Tender Version Diff</h2>
+                    <p>Show material changes between versions (additions/removals) with plain-language diff sentences. E.g., "Deadline moved from 18 Sep to 25 Sep".</p>
+                    <div class="status-badge done">Complete</div>
+                    <span class="link">View mockup <svg data-lucide="arrow-right" style="width: 16px; height: 16px;"></svg></span>
+                </a>
+
+                <a href="11-saved-searches.html" class="card">
+                    <h2>Saved Searches & Alert Rules</h2>
+                    <p>Tactical search rules with per-rule alert threshold and delivery mode override. Explains difference from company profile matching.</p>
+                    <div class="status-badge done">Complete</div>
+                    <span class="link">View mockup <svg data-lucide="arrow-right" style="width: 16px; height: 16px;"></svg></span>
+                </a>
+
+                <a href="12-alert-slack.html" class="card">
+                    <h2>Slack Configuration</h2>
+                    <p>Workspace connection, delivery channel selection, quiet hours, message detail level, and quick actions via emoji reactions.</p>
+                    <div class="status-badge done">Complete</div>
+                    <span class="link">View mockup <svg data-lucide="arrow-right" style="width: 16px; height: 16px;"></svg></span>
+                </a>
+
+                <a href="13-source-coverage.html" class="card">
+                    <h2>Source Coverage Freshness</h2>
+                    <p>Customer-facing table: source name, region, coverage state (Active/Delayed), last checked, notes. Explains freshness policy clearly.</p>
+                    <div class="status-badge done">Complete</div>
+                    <span class="link">View mockup <svg data-lucide="arrow-right" style="width: 16px; height: 16px;"></svg></span>
+                </a>
+
+                <a href="14-export-job.html" class="card">
+                    <h2>Export Job UI</h2>
+                    <p>Async job cards showing processing progress, completed status with download/delete, and expired job states. Full state coverage.</p>
+                    <div class="status-badge done">Complete</div>
+                    <span class="link">View mockup <svg data-lucide="arrow-right" style="width: 16px; height: 16px;"></svg></span>
+                </a>
+
+                <a href="15-admin-source-health.html" class="card">
+                    <h2>Admin: Source Health</h2>
+                    <p>Explicit "Admin" label + danger-colored warning banner. Source status table (active/failed), metrics, freshness breach detection. Never reachable from normal nav.</p>
+                    <div class="status-badge done">Complete</div>
+                    <span class="link">View mockup <svg data-lucide="arrow-right" style="width: 16px; height: 16px;"></svg></span>
+                </a>
+
+                <a href="16-admin-review-queue.html" class="card">
+                    <h2>Admin: Review Queue</h2>
+                    <p>Queue for malformed items, duplicate candidates, policy issues, and low-confidence extractions. Explicit admin label and confirmation flow.</p>
+                    <div class="status-badge done">Complete</div>
+                    <span class="link">View mockup <svg data-lucide="arrow-right" style="width: 16px; height: 16px;"></svg></span>
+                </a>
+            </div>
+        </section>
+
+        <!-- P2 Screens -->
+        <section>
+            <h2>P2 Features (Future Releases)</h2>
+            <div class="section-intro">
+                Lighter-fidelity sketches bundled in one file: CRM integration, advanced collaboration with mentions, SSO/SCIM, API keys, multi-profile comparison, and personalized learning controls. Use as reference for product roadmap and UX validation.
+            </div>
+            <div class="grid">
+                <a href="17-p2-features.html" class="card">
+                    <h2>P2 Bundle: 6 Features</h2>
+                    <p>Tabbed mockups: CRM integration (empty state), team collaboration (comment thread with @mentions), SSO/SCIM config, API key management, multi-profile comparison table, and feedback/learning controls.</p>
+                    <div class="status-badge future">Reference</div>
+                    <span class="link">View mockup <svg data-lucide="arrow-right" style="width: 16px; height: 16px;"></svg></span>
+                </a>
+            </div>
+        </section>
+
+        <!-- Design System -->
+        <section>
+            <h2>Design System Reference</h2>
+
+            <div class="design-section">
+                <h3>Color Tokens</h3>
+                <div class="color-grid">
+                    <div class="color-swatch">
+                        <div class="swatch-box" style="background-color: #f5f7fa; border: 1px solid #e2e8f0;"></div>
+                        <div class="swatch-label"><strong>Canvas</strong><code>#f5f7fa</code></div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="swatch-box" style="background-color: #ffffff; border: 1px solid #e2e8f0;"></div>
+                        <div class="swatch-label"><strong>Surface</strong><code>#ffffff</code></div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="swatch-box" style="background-color: #0052cc;"></div>
+                        <div class="swatch-label"><strong>Accent</strong><code>#0052cc</code></div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="swatch-box" style="background-color: #16a34a;"></div>
+                        <div class="swatch-label"><strong>Success</strong><code>#16a34a</code></div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="swatch-box" style="background-color: #d97706;"></div>
+                        <div class="swatch-label"><strong>Warning</strong><code>#d97706</code></div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="swatch-box" style="background-color: #dc2626;"></div>
+                        <div class="swatch-label"><strong>Danger</strong><code>#dc2626</code></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="design-section">
+                <h3>Typography & Iconography</h3>
+                <ul class="notes-list">
+                    <li><strong>Display:</strong> Space Grotesk 600-700 weight (page titles, callouts)</li>
+                    <li><strong>Body:</strong> Inter 400-600 weight (labels, prose, tables)</li>
+                    <li><strong>Mono:</strong> JetBrains Mono 400-500 weight (IDs, codes, debug info)</li>
+                    <li><strong>Icons:</strong> Lucide icon set (outline style, 1.75–2px stroke) via CDN. Every icon-only control includes tooltip and accessible name.</li>
+                </ul>
+            </div>
+
+            <div class="design-section">
+                <h3>Key Updates (This Iteration)</h3>
+                <ul class="notes-list">
+                    <li><strong>Icon library:</strong> All mockups now use Lucide icons (https://lucide.dev) via CDN, replacing emoji/unicode. Icons are genuinely interactive and accessible.</li>
+                    <li><strong>P1 screens:</strong> Added 8 full-fidelity mockups per spec section 15. Pipeline workspace context panel, tender version diff UI, saved searches, Slack config, source coverage, export jobs, admin panels (source health + review queue).</li>
+                    <li><strong>P2 screens:</strong> Bundled 6 lighter-fidelity sketches into one tabbed mockup for reference and roadmap planning.</li>
+                    <li><strong>Admin visual separation:</strong> Admin screens include explicit "Admin" label and danger-colored environment marker. Never reachable accidentally from normal navigation.</li>
+                    <li><strong>Deferred:</strong> Very little remains deferred—mostly deep integration flows and complex collaboration features that require backend definition (CRM sync, SSO/SCIM provisioning details, advanced analytics).</li>
+                </ul>
+            </div>
+
+            <div class="design-section">
+                <h3>Coverage Summary</h3>
+                <ul class="notes-list">
+                    <li><strong>P0 (8 screens):</strong> Sign in, onboarding, app shell, inbox, tender detail, explore, alerts, pipeline board. All states covered (default, loading, empty, error).</li>
+                    <li><strong>P1 (8 screens):</strong> Pipeline workspace, version diff, saved searches, Slack config, source coverage, export jobs, admin source health, admin review queue. Full fidelity, production-ready references.</li>
+                    <li><strong>P2 (1 bundle file, 6 features):</strong> CRM integration, collaboration/mentions, SSO/SCIM, API keys, multi-profile comparison, learning controls. Lighter fidelity for early validation.</li>
+                    <li><strong>Responsive:</strong> Desktop (1280px+) primary layout. Mobile adaptations in app shell mockup. Breakpoints follow spec section 9.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <h2>Handoff Notes for Engineering</h2>
+            <div class="design-section">
+                <ul class="notes-list">
+                    <li>All CSS uses design tokens (--color-*, --space-*, --radius-*). Never use raw colors ad hoc.</li>
+                    <li>Replace Lucide CDN link with production-ready bundler or SVG sprite approach for performance.</li>
+                    <li>Implement all 8 interaction states per spec section 8: default, hover, focus-visible, active, disabled, loading, error, success. Verify no layout shifts.</li>
+                    <li>Mobile breakpoints: 320, 375, 414, 768, 1024, 1440 CSS px. Test with 200% zoom and reflow.</li>
+                    <li>Keyboard navigation: Tab reaches all controls, Arrow keys navigate lists/tables, Escape closes modals, Enter confirms. Announce state changes via aria-live.</li>
+                    <li>Admin screens must have explicit visual separation from customer app. Use spec section 6.10 warning language and never link from normal navigation.</li>
+                    <li>Content rules: No invented logos/metrics/testimonials. Thai/English UI-ready. Status labels use text+icon (never color alone). Confidence and risk are separate fields.</li>
+                </ul>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

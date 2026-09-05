@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inbox - Tender Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.css">
+    <style>
+        :root {
+            --color-canvas: #f5f7fa;
+            --color-surface: #ffffff;
+            --color-surface-raised: #eef1f7;
+            --color-ink: #0f172a;
+            --color-ink-muted: #64748b;
+            --color-ink-faint: #cbd5e1;
+            --color-rule: #e2e8f0;
+            --color-accent: #0052cc;
+            --color-accent-ink: #ffffff;
+            --color-warning: #d97706;
+            --color-success: #16a34a;
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-canvas);
+            color: var(--color-ink);
+        }
+
+        .page {
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: var(--space-8);
+            padding: var(--space-8);
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .main-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .page-header {
+            margin-bottom: var(--space-8);
+        }
+
+        .page-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: var(--space-3);
+        }
+
+        .page-meta {
+            font-size: 14px;
+            color: var(--color-ink-muted);
+        }
+
+        .controls-bar {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            margin-bottom: var(--space-6);
+            display: flex;
+            gap: var(--space-4);
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 9px var(--space-3);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            color: var(--color-ink);
+        }
+
+        .search-input::placeholder {
+            color: var(--color-ink-faint);
+        }
+
+        .filter-button {
+            padding: 9px var(--space-4);
+            background-color: var(--color-surface-raised);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            cursor: pointer;
+            color: var(--color-ink);
+            transition: all 150ms ease;
+            white-space: nowrap;
+        }
+
+        .filter-button:hover {
+            border-color: var(--color-accent);
+            background-color: white;
+        }
+
+        .filter-button.active {
+            background-color: var(--color-accent);
+            color: var(--color-accent-ink);
+            border-color: var(--color-accent);
+        }
+
+        .controls-right {
+            display: flex;
+            gap: var(--space-3);
+            margin-left: auto;
+        }
+
+        .icon-button {
+            padding: 9px var(--space-4);
+            background-color: var(--color-surface-raised);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            cursor: pointer;
+            color: var(--color-ink);
+            transition: all 150ms ease;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .icon-button svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2px;
+        }
+
+        .icon-button:hover {
+            border-color: var(--color-accent);
+            background-color: white;
+        }
+
+        .tender-list {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .tender-row {
+            padding: var(--space-5) var(--space-6);
+            border-bottom: 1px solid var(--color-rule);
+            cursor: pointer;
+            transition: background-color 150ms ease;
+            display: grid;
+            grid-template-columns: 60px 1fr 120px 100px auto;
+            gap: var(--space-6);
+            align-items: center;
+        }
+
+        .tender-row:last-child {
+            border-bottom: none;
+        }
+
+        .tender-row:hover {
+            background-color: var(--color-surface-raised);
+        }
+
+        .tender-row.selected {
+            background-color: rgba(0, 82, 204, 0.05);
+            border-left: 3px solid var(--color-accent);
+            padding-left: calc(var(--space-6) - 3px);
+        }
+
+        .score-badge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            background-color: var(--color-surface-raised);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--color-accent);
+        }
+
+        .tender-info h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: var(--space-1);
+            color: var(--color-ink);
+        }
+
+        .tender-info p {
+            font-size: 12px;
+            color: var(--color-ink-muted);
+            line-height: 1.4;
+        }
+
+        .deadline {
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .deadline-date {
+            font-weight: 600;
+            color: var(--color-ink);
+            display: block;
+            margin-bottom: var(--space-1);
+        }
+
+        .deadline-urgency {
+            font-size: 12px;
+            color: var(--color-warning);
+            font-weight: 500;
+        }
+
+        .fit-tags {
+            display: flex;
+            gap: var(--space-2);
+            flex-wrap: wrap;
+        }
+
+        .fit-tag {
+            padding: var(--space-1) var(--space-3);
+            background-color: rgba(0, 82, 204, 0.08);
+            color: var(--color-accent);
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .actions {
+            display: flex;
+            gap: var(--space-2);
+        }
+
+        .action-button {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--color-rule);
+            background-color: var(--color-surface);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 150ms ease;
+            padding: 0;
+        }
+
+        .action-button svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2px;
+        }
+
+        .action-button:hover {
+            border-color: var(--color-accent);
+            background-color: var(--color-surface-raised);
+        }
+
+        .action-button[title]::after {
+            content: attr(title);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--color-ink);
+            color: var(--color-accent-ink);
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 150ms ease;
+        }
+
+        .action-button:hover::after {
+            opacity: 1;
+        }
+
+        /* Detail Panel */
+        .detail-panel {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-6);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: var(--space-4);
+            color: var(--color-ink);
+        }
+
+        .detail-section {
+            margin-bottom: var(--space-6);
+            padding-bottom: var(--space-4);
+            border-bottom: 1px solid var(--color-rule);
+        }
+
+        .detail-section:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--color-ink-faint);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--space-2);
+        }
+
+        .detail-value {
+            font-size: 13px;
+            color: var(--color-ink);
+            line-height: 1.5;
+        }
+
+        .detail-actions {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+            margin-top: auto;
+            padding-top: var(--space-6);
+            border-top: 1px solid var(--color-rule);
+        }
+
+        .detail-button {
+            padding: 10px var(--space-4);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 150ms ease;
+        }
+
+        .detail-button-primary {
+            background-color: var(--color-accent);
+            color: var(--color-accent-ink);
+            border-color: var(--color-accent);
+        }
+
+        .detail-button-primary:hover {
+            background-color: #0043a8;
+        }
+
+        .detail-button-secondary {
+            background-color: var(--color-surface-raised);
+            color: var(--color-ink);
+        }
+
+        .detail-button-secondary:hover {
+            background-color: var(--color-canvas);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--space-12);
+            color: var(--color-ink-faint);
+        }
+
+        .empty-state svg {
+            width: 32px;
+            height: 32px;
+            margin-bottom: var(--space-4);
+            stroke-width: 1.5px;
+        }
+
+        .empty-state-text {
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .state-controls {
+            position: fixed;
+            bottom: var(--space-8);
+            left: var(--space-8);
+            background: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            display: flex;
+            gap: var(--space-2);
+            flex-wrap: wrap;
+            max-width: 500px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+        }
+
+        .state-button {
+            padding: var(--space-2) var(--space-3);
+            background: var(--color-canvas);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 150ms ease;
+            font-weight: 500;
+        }
+
+        .state-button:hover {
+            background: var(--color-surface-raised);
+            border-color: var(--color-accent);
+        }
+
+        .state-button.active {
+            background: var(--color-accent);
+            color: white;
+            border-color: var(--color-accent);
+        }
+
+        @media (max-width: 1024px) {
+            .page {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <!-- Main Column -->
+        <div class="main-column">
+            <div class="page-header">
+                <h1 class="page-title">Opportunities</h1>
+                <p class="page-meta" id="listMeta">14 open matches · Updated 6 min ago</p>
+            </div>
+
+            <div class="controls-bar">
+                <input class="search-input" type="text" placeholder="Search by title, buyer...">
+                <button class="filter-button" onclick="toggleFilter('country')">Country</button>
+                <button class="filter-button" onclick="toggleFilter('deadline')">Deadline</button>
+                <button class="filter-button" onclick="toggleFilter('score')">Score</button>
+                <button class="filter-button">More filters</button>
+                <button class="filter-button" style="background-color: white; color: var(--color-ink-muted);">Reset</button>
+                <div class="controls-right">
+                    <button class="icon-button" title="Export"><svg data-lucide="download"></svg> Export</button>
+                    <button class="icon-button" title="Refresh"><svg data-lucide="refresh-cw"></svg> Refresh</button>
+                </div>
+            </div>
+
+            <div id="contentContainer">
+                <div class="tender-list">
+                    <div class="tender-row selected" onclick="selectTender(this, 1)">
+                        <div class="score-badge">91</div>
+                        <div class="tender-info">
+                            <h3>Cloud case management</h3>
+                            <p>Ministry of Health · Singapore</p>
+                        </div>
+                        <div class="fit-tags">
+                            <span class="fit-tag">React</span>
+                            <span class="fit-tag">AWS</span>
+                        </div>
+                        <div class="deadline">
+                            <span class="deadline-date">28 Sep</span>
+                            <span class="deadline-urgency">5 days</span>
+                        </div>
+                        <div class="actions">
+                            <button class="action-button" title="Save"><svg data-lucide="heart"></svg></button>
+                            <button class="action-button" title="Dismiss"><svg data-lucide="x"></svg></button>
+                            <button class="action-button" title="More"><svg data-lucide="more-vertical"></svg></button>
+                        </div>
+                    </div>
+
+                    <div class="tender-row" onclick="selectTender(this, 2)">
+                        <div class="score-badge">84</div>
+                        <div class="tender-info">
+                            <h3>Mobile service platform</h3>
+                            <p>State Bank · Singapore</p>
+                        </div>
+                        <div class="fit-tags">
+                            <span class="fit-tag">React</span>
+                        </div>
+                        <div class="deadline">
+                            <span class="deadline-date">02 Oct</span>
+                            <span class="deadline-urgency">9 days</span>
+                        </div>
+                        <div class="actions">
+                            <button class="action-button" title="Save"><svg data-lucide="heart"></svg></button>
+                            <button class="action-button" title="Dismiss"><svg data-lucide="x"></svg></button>
+                            <button class="action-button" title="More"><svg data-lucide="more-vertical"></svg></button>
+                        </div>
+                    </div>
+
+                    <div class="tender-row" onclick="selectTender(this, 3)">
+                        <div class="score-badge">73</div>
+                        <div class="tender-info">
+                            <h3>Data integration support</h3>
+                            <p>Transportation Authority · Singapore</p>
+                        </div>
+                        <div class="fit-tags">
+                            <span class="fit-tag">Node.js</span>
+                        </div>
+                        <div class="deadline">
+                            <span class="deadline-date">18 Sep</span>
+                            <span style="color: #dc2626;">Deadline soon</span>
+                        </div>
+                        <div class="actions">
+                            <button class="action-button" title="Save"><svg data-lucide="heart"></svg></button>
+                            <button class="action-button" title="Dismiss"><svg data-lucide="x"></svg></button>
+                            <button class="action-button" title="More"><svg data-lucide="more-vertical"></svg></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detail Panel -->
+        <div class="detail-panel" id="detailPanel">
+            <div class="empty-state">
+                <svg data-lucide="hand-pointer"></svg>
+                <div class="empty-state-text">Select a tender to view details</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- State Toggle Controls -->
+    <div class="state-controls">
+        <button class="state-button active" onclick="showState('default')">Default (List view)</button>
+        <button class="state-button" onclick="showState('empty')">Empty State</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        function selectTender(element, id) {
+            document.querySelectorAll('.tender-row').forEach(row => {
+                row.classList.remove('selected');
+            });
+            element.classList.add('selected');
+
+            const details = {
+                1: {
+                    title: 'Cloud case management',
+                    buyer: 'Ministry of Health',
+                    score: '91',
+                    band: 'Strong match',
+                    deadline: '28 Sep (5 days)',
+                    status: 'Open',
+                    budget: '$150,000 – $250,000',
+                    type: 'Software development',
+                },
+                2: {
+                    title: 'Mobile service platform',
+                    buyer: 'State Bank',
+                    score: '84',
+                    band: 'Strong match',
+                    deadline: '02 Oct (9 days)',
+                    status: 'Open',
+                    budget: '$80,000 – $120,000',
+                    type: 'Mobile application',
+                },
+                3: {
+                    title: 'Data integration support',
+                    buyer: 'Transportation Authority',
+                    score: '73',
+                    band: 'Worth reviewing',
+                    deadline: '18 Sep (2 days)',
+                    status: 'Open',
+                    budget: 'Not stated',
+                    type: 'Data engineering',
+                }
+            };
+
+            const detail = details[id];
+            const panel = document.getElementById('detailPanel');
+            panel.innerHTML = `
+                <div class="detail-title">${detail.title}</div>
+                <div class="detail-section">
+                    <div class="detail-label">Score</div>
+                    <div class="detail-value">${detail.score} · ${detail.band}</div>
+                </div>
+                <div class="detail-section">
+                    <div class="detail-label">Buyer</div>
+                    <div class="detail-value">${detail.buyer}</div>
+                </div>
+                <div class="detail-section">
+                    <div class="detail-label">Deadline</div>
+                    <div class="detail-value">${detail.deadline}</div>
+                </div>
+                <div class="detail-section">
+                    <div class="detail-label">Budget</div>
+                    <div class="detail-value">${detail.budget}</div>
+                </div>
+                <div class="detail-section">
+                    <div class="detail-label">Type</div>
+                    <div class="detail-value">${detail.type}</div>
+                </div>
+                <div class="detail-actions">
+                    <button class="detail-button detail-button-primary">Mark pursuing</button>
+                    <button class="detail-button detail-button-secondary">View full details →</button>
+                    <button class="detail-button detail-button-secondary">Dismiss</button>
+                </div>
+            `;
+            // Reinitialize icons after DOM update
+            lucide.createIcons();
+        }
+
+        function showState(state) {
+            const container = document.getElementById('contentContainer');
+            const panel = document.getElementById('detailPanel');
+            const meta = document.getElementById('listMeta');
+
+            if (state === 'empty') {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: var(--space-12); background-color: var(--color-surface); border: 1px solid var(--color-rule); border-radius: var(--radius-md); color: var(--color-ink-faint);">
+                        <svg data-lucide="inbox" style="width: 32px; height: 32px; margin: 0 auto var(--space-4); stroke-width: 1.5px;"></svg>
+                        <div style="font-size: 14px; line-height: 1.5; margin-bottom: var(--space-4);">No open opportunities match these filters.</div>
+                        <button class="filter-button" style="margin-top: var(--space-4);">Clear filters</button>
+                    </div>
+                `;
+                meta.textContent = '0 matches';
+                panel.innerHTML = `
+                    <div class="empty-state">
+                        <svg data-lucide="hand-pointer"></svg>
+                        <div class="empty-state-text">Select a tender to view details</div>
+                    </div>
+                `;
+            } else {
+                location.reload();
+            }
+
+            document.querySelectorAll('.state-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            lucide.createIcons();
+        }
+
+        function toggleFilter(name) {
+            event.target.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

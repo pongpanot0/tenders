@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - Tender Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.css">
+    <style>
+        :root {
+            --color-canvas: #f5f7fa;
+            --color-surface: #ffffff;
+            --color-surface-raised: #eef1f7;
+            --color-ink: #0f172a;
+            --color-ink-muted: #64748b;
+            --color-ink-faint: #cbd5e1;
+            --color-rule: #e2e8f0;
+            --color-accent: #0052cc;
+            --color-accent-ink: #ffffff;
+            --color-danger: #dc2626;
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-canvas);
+            color: var(--color-ink);
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 100vh;
+        }
+
+        .left-panel {
+            background-color: var(--color-surface);
+            padding: var(--space-8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-right: 1px solid var(--color-rule);
+        }
+
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: var(--space-12);
+            color: var(--color-accent);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .logo svg {
+            width: 24px;
+            height: 24px;
+            stroke-width: 2px;
+        }
+
+        .headline {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: var(--space-6);
+            color: var(--color-ink);
+        }
+
+        .subheadline {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--color-ink-muted);
+            margin-bottom: var(--space-12);
+        }
+
+        .right-panel {
+            background-color: var(--color-canvas);
+            padding: var(--space-8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-wrapper {
+            width: 100%;
+            max-width: 360px;
+        }
+
+        .form-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: var(--space-8);
+            text-align: center;
+            color: var(--color-ink);
+        }
+
+        .button {
+            width: 100%;
+            padding: 12px var(--space-4);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 150ms ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-3);
+            margin-bottom: var(--space-4);
+        }
+
+        .button svg {
+            width: 18px;
+            height: 18px;
+            stroke-width: 2px;
+        }
+
+        .button-primary {
+            background-color: var(--color-accent);
+            color: var(--color-accent-ink);
+            border-color: var(--color-accent);
+        }
+
+        .button-primary:hover {
+            background-color: #0043a8;
+        }
+
+        .button-secondary {
+            background-color: var(--color-surface);
+            color: var(--color-ink);
+        }
+
+        .button-secondary:hover {
+            background-color: var(--color-surface-raised);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            margin: var(--space-6) 0;
+            color: var(--color-ink-faint);
+            font-size: 12px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background-color: var(--color-rule);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-5);
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: var(--space-2);
+            color: var(--color-ink);
+        }
+
+        input {
+            width: 100%;
+            padding: 11px var(--space-4);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: var(--color-ink);
+            transition: border-color 150ms ease;
+        }
+
+        input:hover {
+            border-color: var(--color-rule-strong);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.1);
+        }
+
+        input.error {
+            border-color: var(--color-danger);
+        }
+
+        .error-message {
+            font-size: 12px;
+            color: var(--color-danger);
+            margin-top: var(--space-2);
+            display: flex;
+            align-items: center;
+            gap: var(--space-1);
+        }
+
+        .error-message svg {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+            stroke-width: 2px;
+        }
+
+        .sso-link {
+            text-align: center;
+            font-size: 12px;
+            color: var(--color-ink-muted);
+            padding-top: var(--space-4);
+            border-top: 1px solid var(--color-rule);
+            margin-top: var(--space-4);
+        }
+
+        .sso-link a {
+            color: var(--color-accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .sso-link a:hover {
+            text-decoration: underline;
+        }
+
+        .state-controls {
+            position: fixed;
+            bottom: var(--space-8);
+            left: var(--space-8);
+            background: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            display: flex;
+            gap: var(--space-2);
+            flex-wrap: wrap;
+            max-width: 400px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .state-button {
+            padding: var(--space-2) var(--space-3);
+            background: var(--color-canvas);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 150ms ease;
+            font-weight: 500;
+        }
+
+        .state-button:hover {
+            background: var(--color-surface-raised);
+            border-color: var(--color-accent);
+        }
+
+        .state-button.active {
+            background: var(--color-accent);
+            color: white;
+            border-color: var(--color-accent);
+        }
+
+        @media (max-width: 960px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .left-panel {
+                border-right: none;
+                border-bottom: 1px solid var(--color-rule);
+                padding: var(--space-6);
+            }
+
+            .headline {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Panel -->
+        <div class="left-panel">
+            <div class="logo">
+                <svg data-lucide="target"></svg>
+                Tender Intelligence
+            </div>
+            <h1 class="headline">Find work worth bidding.</h1>
+            <p class="subheadline">
+                See the tenders your team can actually pursue. Understand the fit, the risks, and what comes next — before you commit.
+            </p>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="right-panel">
+            <div class="form-wrapper">
+                <h2 class="form-title">Sign in</h2>
+
+                <button class="button button-secondary">
+                    <svg data-lucide="chrome"></svg>
+                    <span>Continue with Google</span>
+                </button>
+
+                <div class="divider">or</div>
+
+                <div id="defaultState">
+                    <div class="form-group">
+                        <label for="email">Work email</label>
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="name@company.com"
+                        >
+                    </div>
+
+                    <button class="button button-primary">Continue</button>
+                </div>
+
+                <div id="errorState" style="display: none;">
+                    <div class="form-group">
+                        <label for="email-error">Work email</label>
+                        <input
+                            type="email"
+                            id="email-error"
+                            class="error"
+                            value="invalid@"
+                        >
+                        <div class="error-message">
+                            <svg data-lucide="alert-triangle"></svg>
+                            Enter a valid email address
+                        </div>
+                    </div>
+
+                    <button class="button button-primary">Continue</button>
+                </div>
+
+                <div class="sso-link">
+                    SSO? <a href="#">Use your company login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- State Toggle Controls -->
+    <div class="state-controls">
+        <button class="state-button active" onclick="showState('default')">Default</button>
+        <button class="state-button" onclick="showState('error')">Error State</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        function showState(state) {
+            document.getElementById('defaultState').style.display = state === 'default' ? 'block' : 'none';
+            document.getElementById('errorState').style.display = state === 'error' ? 'block' : 'none';
+
+            document.querySelectorAll('.state-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore - Tender Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.css">
+    <style>
+        :root {
+            --color-canvas: #f5f7fa;
+            --color-surface: #ffffff;
+            --color-surface-raised: #eef1f7;
+            --color-ink: #0f172a;
+            --color-ink-muted: #64748b;
+            --color-ink-faint: #cbd5e1;
+            --color-rule: #e2e8f0;
+            --color-accent: #0052cc;
+            --color-accent-ink: #ffffff;
+            --color-warning: #d97706;
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-canvas);
+            color: var(--color-ink);
+        }
+
+        .page {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-8);
+        }
+
+        .page-header {
+            margin-bottom: var(--space-6);
+        }
+
+        .page-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: var(--space-2);
+        }
+
+        .search-container {
+            margin-bottom: var(--space-6);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px var(--space-4);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: var(--color-ink);
+            background-color: var(--color-surface);
+        }
+
+        .search-input::placeholder {
+            color: var(--color-ink-faint);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.1);
+        }
+
+        .controls-bar {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            margin-bottom: var(--space-6);
+            display: flex;
+            gap: var(--space-4);
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: var(--space-3);
+            flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .filter-button {
+            padding: 9px var(--space-4);
+            background-color: var(--color-surface-raised);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            cursor: pointer;
+            color: var(--color-ink);
+            transition: all 150ms ease;
+            white-space: nowrap;
+        }
+
+        .filter-button:hover {
+            border-color: var(--color-accent);
+            background-color: white;
+        }
+
+        .filter-button.active {
+            background-color: var(--color-accent);
+            color: var(--color-accent-ink);
+            border-color: var(--color-accent);
+        }
+
+        .controls-right {
+            display: flex;
+            gap: var(--space-3);
+            align-items: center;
+        }
+
+        .icon-button {
+            padding: 9px var(--space-4);
+            background-color: var(--color-surface-raised);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            cursor: pointer;
+            color: var(--color-ink);
+            transition: all 150ms ease;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .icon-button svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2px;
+        }
+
+        .icon-button:hover {
+            border-color: var(--color-accent);
+            background-color: white;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-6);
+            flex-wrap: wrap;
+            gap: var(--space-4);
+        }
+
+        .results-count {
+            font-size: 14px;
+            color: var(--color-ink-muted);
+        }
+
+        .results-right {
+            display: flex;
+            gap: var(--space-4);
+            align-items: center;
+        }
+
+        .sort-select {
+            padding: 8px var(--space-3);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            color: var(--color-ink);
+            background-color: var(--color-surface);
+            cursor: pointer;
+        }
+
+        .result-table {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 1fr 120px 120px 100px 80px;
+            gap: var(--space-6);
+            padding: var(--space-4) var(--space-6);
+            background-color: var(--color-canvas);
+            border-bottom: 1px solid var(--color-rule);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--color-ink-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 1fr 120px 120px 100px 80px;
+            gap: var(--space-6);
+            padding: var(--space-5) var(--space-6);
+            border-bottom: 1px solid var(--color-rule);
+            align-items: center;
+            transition: background-color 150ms ease;
+            cursor: pointer;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .table-row:hover {
+            background-color: var(--color-surface-raised);
+        }
+
+        .tender-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--color-ink);
+            line-height: 1.4;
+        }
+
+        .tender-buyer {
+            font-size: 12px;
+            color: var(--color-ink-muted);
+            margin-top: var(--space-1);
+        }
+
+        .date-cell {
+            font-size: 13px;
+            color: var(--color-ink);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .value-cell {
+            font-size: 13px;
+            color: var(--color-ink);
+            font-weight: 500;
+        }
+
+        .fit-badge {
+            display: inline-block;
+            padding: var(--space-2) var(--space-3);
+            background-color: rgba(0, 82, 204, 0.08);
+            color: var(--color-accent);
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 600;
+            text-align: center;
+            min-width: 50px;
+        }
+
+        .fit-badge.neutral {
+            background-color: var(--color-surface-raised);
+            color: var(--color-ink-muted);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-2);
+            margin-top: var(--space-8);
+            padding: var(--space-6);
+        }
+
+        .page-button {
+            padding: 8px var(--space-3);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-sm);
+            background-color: var(--color-surface);
+            color: var(--color-ink);
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 150ms ease;
+        }
+
+        .page-button:hover {
+            border-color: var(--color-accent);
+            background-color: var(--color-surface-raised);
+        }
+
+        .page-button.active {
+            background-color: var(--color-accent);
+            color: white;
+            border-color: var(--color-accent);
+        }
+
+        .state-controls {
+            position: fixed;
+            bottom: var(--space-8);
+            left: var(--space-8);
+            background: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            display: flex;
+            gap: var(--space-2);
+            flex-wrap: wrap;
+            max-width: 400px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+        }
+
+        .state-button {
+            padding: var(--space-2) var(--space-3);
+            background: var(--color-canvas);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 150ms ease;
+            font-weight: 500;
+        }
+
+        .state-button:hover {
+            background: var(--color-surface-raised);
+            border-color: var(--color-accent);
+        }
+
+        .state-button.active {
+            background: var(--color-accent);
+            color: white;
+            border-color: var(--color-accent);
+        }
+
+        @media (max-width: 1024px) {
+            .table-header,
+            .table-row {
+                grid-template-columns: 1fr 100px 80px;
+            }
+
+            .controls-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-buttons {
+                flex: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="page-header">
+            <h1 class="page-title">Explore tenders</h1>
+        </div>
+
+        <div class="search-container">
+            <input
+                class="search-input"
+                type="text"
+                placeholder="Search by title, buyer, technology, tender ID, or key terms…"
+                value="cloud platform"
+            >
+        </div>
+
+        <div class="controls-bar">
+            <div class="filter-buttons">
+                <button class="filter-button">Open</button>
+                <button class="filter-button active">Countries</button>
+                <button class="filter-button">Sources</button>
+                <button class="filter-button">Published</button>
+                <button class="filter-button">Deadline</button>
+                <button class="filter-button">Value</button>
+                <button class="filter-button">More filters</button>
+            </div>
+            <div class="controls-right">
+                <button class="icon-button"><svg data-lucide="save"></svg> Save search</button>
+                <button class="icon-button"><svg data-lucide="columns-3"></svg> Columns</button>
+            </div>
+        </div>
+
+        <div class="results-header">
+            <div class="results-count">Found <strong>247</strong> results</div>
+            <div class="results-right">
+                <select class="sort-select">
+                    <option>Sort: Relevance</option>
+                    <option>Deadline (soonest)</option>
+                    <option>Recently published</option>
+                    <option>Value (high to low)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="result-table">
+            <div class="table-header">
+                <div>Tender / Buyer</div>
+                <div>Country</div>
+                <div>Published</div>
+                <div>Deadline</div>
+                <div>Value</div>
+                <div>Your fit</div>
+            </div>
+
+            <div class="table-row">
+                <div>
+                    <div class="tender-title">Cloud case management platform for healthcare</div>
+                    <div class="tender-buyer">Ministry of Health</div>
+                </div>
+                <div class="date-cell">Singapore</div>
+                <div class="date-cell">25 Sep</div>
+                <div class="date-cell">28 Sep</div>
+                <div class="value-cell">$150k – $250k</div>
+                <div class="fit-badge">87</div>
+            </div>
+
+            <div class="table-row">
+                <div>
+                    <div class="tender-title">Mobile service platform integration</div>
+                    <div class="tender-buyer">State Bank</div>
+                </div>
+                <div class="date-cell">Singapore</div>
+                <div class="date-cell">24 Sep</div>
+                <div class="date-cell">02 Oct</div>
+                <div class="value-cell">$80k – $120k</div>
+                <div class="fit-badge">84</div>
+            </div>
+
+            <div class="table-row">
+                <div>
+                    <div class="tender-title">Data integration and reporting platform</div>
+                    <div class="tender-buyer">Transportation Authority</div>
+                </div>
+                <div class="date-cell">Singapore</div>
+                <div class="date-cell">23 Sep</div>
+                <div class="date-cell">18 Sep</div>
+                <div class="value-cell">$120k – $180k</div>
+                <div class="fit-badge">73</div>
+            </div>
+
+            <div class="table-row">
+                <div>
+                    <div class="tender-title">Supply chain visibility system</div>
+                    <div class="tender-buyer">Commerce Ministry</div>
+                </div>
+                <div class="date-cell">Singapore</div>
+                <div class="date-cell">22 Sep</div>
+                <div class="date-cell">05 Oct</div>
+                <div class="value-cell">$200k – $300k</div>
+                <div class="fit-badge neutral">48</div>
+            </div>
+
+            <div class="table-row">
+                <div>
+                    <div class="tender-title">Government digital identity platform (Phase 2)</div>
+                    <div class="tender-buyer">Digital Economy Office</div>
+                </div>
+                <div class="date-cell">Thailand</div>
+                <div class="date-cell">21 Sep</div>
+                <div class="date-cell">15 Oct</div>
+                <div class="value-cell">$500k – $750k</div>
+                <div class="fit-badge neutral">52</div>
+            </div>
+
+            <div class="table-row">
+                <div>
+                    <div class="tender-title">Retail POS system modernization</div>
+                    <div class="tender-buyer">Department Store Chain</div>
+                </div>
+                <div class="date-cell">Malaysia</div>
+                <div class="date-cell">20 Sep</div>
+                <div class="date-cell">08 Oct</div>
+                <div class="value-cell">$60k – $100k</div>
+                <div class="fit-badge neutral">41</div>
+            </div>
+        </div>
+
+        <div class="pagination">
+            <button class="page-button active">1</button>
+            <button class="page-button">2</button>
+            <button class="page-button">3</button>
+            <button class="page-button">4</button>
+            <span style="color: var(--color-ink-muted); margin: 0 var(--space-2);">…</span>
+            <button class="page-button">24</button>
+        </div>
+    </div>
+
+    <!-- State Toggle Controls -->
+    <div class="state-controls">
+        <button class="state-button active" onclick="showState('results')">Results (247)</button>
+        <button class="state-button" onclick="showState('empty')">Empty (0 results)</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        function showState(state) {
+            const table = document.querySelector('.result-table');
+            const count = document.querySelector('.results-count');
+
+            if (state === 'empty') {
+                table.innerHTML = `
+                    <div style="text-align: center; padding: var(--space-12); color: var(--color-ink-faint);">
+                        <svg data-lucide="search" style="width: 32px; height: 32px; margin: 0 auto var(--space-4); stroke-width: 1.5px;"></svg>
+                        <div style="font-size: 14px; line-height: 1.5;">No tenders match these criteria.</div>
+                        <button class="filter-button" style="margin-top: var(--space-4);">Clear filters</button>
+                    </div>
+                `;
+                count.innerHTML = 'Found <strong>0</strong> results';
+            } else {
+                location.reload();
+            }
+
+            document.querySelectorAll('.state-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>

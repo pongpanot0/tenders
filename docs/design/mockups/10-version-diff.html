@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Version Diff - Tender Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.css">
+    <style>
+        :root {
+            --color-canvas: #f5f7fa;
+            --color-surface: #ffffff;
+            --color-surface-raised: #eef1f7;
+            --color-ink: #0f172a;
+            --color-ink-muted: #64748b;
+            --color-ink-faint: #cbd5e1;
+            --color-rule: #e2e8f0;
+            --color-accent: #0052cc;
+            --color-accent-ink: #ffffff;
+            --color-success: #16a34a;
+            --color-warning: #d97706;
+            --color-danger: #dc2626;
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-canvas);
+            color: var(--color-ink);
+        }
+
+        .page {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: var(--space-8);
+        }
+
+        .page-header {
+            margin-bottom: var(--space-8);
+        }
+
+        .page-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: var(--space-3);
+        }
+
+        .tender-meta {
+            font-size: 14px;
+            color: var(--color-ink-muted);
+        }
+
+        .tabs {
+            display: flex;
+            gap: var(--space-4);
+            margin-bottom: var(--space-8);
+            border-bottom: 1px solid var(--color-rule);
+        }
+
+        .tab {
+            padding: var(--space-4) 0;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--color-ink-muted);
+            transition: all 150ms ease;
+        }
+
+        .tab:hover {
+            color: var(--color-ink);
+        }
+
+        .tab.active {
+            color: var(--color-accent);
+            border-bottom-color: var(--color-accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .version-list {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .version-item {
+            padding: var(--space-6);
+            border-bottom: 1px solid var(--color-rule);
+            cursor: pointer;
+            transition: background-color 150ms ease;
+        }
+
+        .version-item:last-child {
+            border-bottom: none;
+        }
+
+        .version-item:hover {
+            background-color: var(--color-surface-raised);
+        }
+
+        .version-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-2);
+        }
+
+        .version-time {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--color-ink-muted);
+        }
+
+        .version-status {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1);
+            padding: var(--space-1) var(--space-3);
+            background-color: rgba(22, 163, 74, 0.1);
+            color: var(--color-success);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .version-status svg {
+            width: 14px;
+            height: 14px;
+            stroke-width: 2px;
+        }
+
+        .version-diff {
+            margin-top: var(--space-4);
+            padding: var(--space-4);
+            background-color: var(--color-canvas);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .diff-addition {
+            color: var(--color-success);
+            display: flex;
+            gap: var(--space-2);
+            margin-bottom: var(--space-2);
+        }
+
+        .diff-addition svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2px;
+            flex-shrink: 0;
+        }
+
+        .diff-removal {
+            color: var(--color-danger);
+            display: flex;
+            gap: var(--space-2);
+            margin-bottom: var(--space-2);
+        }
+
+        .diff-removal svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2px;
+            flex-shrink: 0;
+        }
+
+        .diff-sentence {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--color-ink);
+            margin-top: var(--space-2);
+        }
+
+        .update-alert {
+            background-color: rgba(217, 119, 6, 0.1);
+            border: 1px solid var(--color-warning);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            margin-bottom: var(--space-8);
+            display: flex;
+            gap: var(--space-3);
+        }
+
+        .update-alert svg {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2px;
+            color: var(--color-warning);
+            flex-shrink: 0;
+        }
+
+        .update-alert-content {
+            flex: 1;
+        }
+
+        .update-alert-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-warning);
+            margin-bottom: var(--space-1);
+        }
+
+        .update-alert-text {
+            font-size: 13px;
+            color: var(--color-ink-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="page-header">
+            <h1 class="page-title">Cloud case management</h1>
+            <p class="tender-meta">Ministry of Health · Singapore · TEN/2026-001-MOH</p>
+        </div>
+
+        <div class="update-alert">
+            <svg data-lucide="alert-triangle"></svg>
+            <div class="update-alert-content">
+                <div class="update-alert-title">This tender has been updated</div>
+                <div class="update-alert-text">Deadline moved from 18 Sep to 25 Sep. Review the Versions tab to see all changes.</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('versions')">
+                <svg data-lucide="history" style="width: 16px; height: 16px; display: inline; margin-right: var(--space-1); stroke-width: 2px;"></svg>
+                Versions
+            </div>
+            <div class="tab" onclick="switchTab('overview')">
+                <svg data-lucide="file-text" style="width: 16px; height: 16px; display: inline; margin-right: var(--space-1); stroke-width: 2px;"></svg>
+                Overview
+            </div>
+            <div class="tab" onclick="switchTab('activity')">
+                <svg data-lucide="activity" style="width: 16px; height: 16px; display: inline; margin-right: var(--space-1); stroke-width: 2px;"></svg>
+                Activity
+            </div>
+        </div>
+
+        <div id="versions-tab" class="tab-content active">
+            <div class="version-list">
+                <div class="version-item">
+                    <div class="version-header">
+                        <div>
+                            <div style="font-weight: 600; color: var(--color-ink); margin-bottom: var(--space-1);">Version 2 (Latest)</div>
+                            <div class="version-time">04 Sep 2026 · 14:32 UTC</div>
+                        </div>
+                        <div class="version-status">
+                            <svg data-lucide="check-circle"></svg>
+                            Active
+                        </div>
+                    </div>
+                    <div class="version-diff">
+                        <div class="diff-removal">
+                            <svg data-lucide="minus-circle"></svg>
+                            <span>Deadline: 18 September 2026</span>
+                        </div>
+                        <div class="diff-addition">
+                            <svg data-lucide="plus-circle"></svg>
+                            <span>Deadline: 25 September 2026</span>
+                        </div>
+                        <div class="diff-sentence">Deadline moved from 18 Sep to 25 Sep (7-day extension).</div>
+                    </div>
+                </div>
+
+                <div class="version-item">
+                    <div class="version-header">
+                        <div>
+                            <div style="font-weight: 600; color: var(--color-ink); margin-bottom: var(--space-1);">Version 1</div>
+                            <div class="version-time">01 Sep 2026 · 09:15 UTC</div>
+                        </div>
+                        <div class="version-status" style="background-color: rgba(100, 116, 139, 0.1); color: var(--color-ink-muted);">
+                            <svg data-lucide="circle" style="stroke-width: 2px;"></svg>
+                            Archived
+                        </div>
+                    </div>
+                    <div class="version-diff">
+                        <div style="color: var(--color-ink-muted); font-size: 13px;">Original tender notice published.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="overview-tab" class="tab-content">
+            <div style="background-color: var(--color-surface); border: 1px solid var(--color-rule); border-radius: var(--radius-md); padding: var(--space-6);">
+                <h3 style="font-family: 'Space Grotesk', sans-serif; font-size: 16px; margin-bottom: var(--space-4);">Key Information</h3>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-8);">
+                    <div>
+                        <div style="font-size: 11px; font-weight: 600; color: var(--color-ink-faint); text-transform: uppercase; margin-bottom: var(--space-2);">Status</div>
+                        <div style="font-size: 14px; color: var(--color-ink);">Open</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; font-weight: 600; color: var(--color-ink-faint); text-transform: uppercase; margin-bottom: var(--space-2);">Deadline</div>
+                        <div style="font-size: 14px; color: var(--color-ink);">25 Sep 2026</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; font-weight: 600; color: var(--color-ink-faint); text-transform: uppercase; margin-bottom: var(--space-2);">Budget</div>
+                        <div style="font-size: 14px; color: var(--color-ink);">$150,000 – $250,000</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; font-weight: 600; color: var(--color-ink-faint); text-transform: uppercase; margin-bottom: var(--space-2);">Type</div>
+                        <div style="font-size: 14px; color: var(--color-ink);">Software development</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="activity-tab" class="tab-content">
+            <div style="background-color: var(--color-surface); border: 1px solid var(--color-rule); border-radius: var(--radius-md); padding: var(--space-6);">
+                <div style="font-size: 13px; line-height: 1.8; color: var(--color-ink-muted);">
+                    <div style="display: flex; gap: var(--space-3); margin-bottom: var(--space-4);">
+                        <svg data-lucide="refresh-cw" style="width: 16px; height: 16px; stroke-width: 2px; color: var(--color-warning); flex-shrink: 0;"></svg>
+                        <span>Tender updated by source on 04 Sep 14:32 UTC</span>
+                    </div>
+                    <div style="display: flex; gap: var(--space-3); margin-bottom: var(--space-4);">
+                        <svg data-lucide="check-circle" style="width: 16px; height: 16px; stroke-width: 2px; color: var(--color-success); flex-shrink: 0;"></svg>
+                        <span>Analysis completed on 01 Sep 09:45 UTC</span>
+                    </div>
+                    <div style="display: flex; gap: var(--space-3);">
+                        <svg data-lucide="flag" style="width: 16px; height: 16px; stroke-width: 2px; color: var(--color-accent); flex-shrink: 0;"></svg>
+                        <span>Tender discovered on 01 Sep 09:15 UTC</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        lucide.createIcons();
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.closest('.tab').classList.add('active');
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>

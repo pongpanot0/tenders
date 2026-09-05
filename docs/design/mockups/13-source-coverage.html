@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Source Coverage - Tender Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.css">
+    <style>
+        :root {
+            --color-canvas: #f5f7fa;
+            --color-surface: #ffffff;
+            --color-surface-raised: #eef1f7;
+            --color-ink: #0f172a;
+            --color-ink-muted: #64748b;
+            --color-ink-faint: #cbd5e1;
+            --color-rule: #e2e8f0;
+            --color-accent: #0052cc;
+            --color-accent-ink: #ffffff;
+            --color-success: #16a34a;
+            --color-warning: #d97706;
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-canvas);
+            color: var(--color-ink);
+        }
+
+        .page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space-8);
+        }
+
+        .page-header {
+            margin-bottom: var(--space-8);
+        }
+
+        .page-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: var(--space-3);
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: var(--color-ink-muted);
+        }
+
+        .source-table {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 2fr 1.2fr 1.2fr 1.5fr auto;
+            gap: var(--space-6);
+            padding: var(--space-5) var(--space-6);
+            border-bottom: 1px solid var(--color-rule);
+            align-items: center;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .table-header {
+            background-color: var(--color-canvas);
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--color-ink-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .source-name {
+            font-weight: 600;
+            color: var(--color-ink);
+        }
+
+        .region-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1);
+            padding: var(--space-2) var(--space-3);
+            background-color: var(--color-surface-raised);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--color-ink);
+        }
+
+        .region-badge svg {
+            width: 14px;
+            height: 14px;
+            stroke-width: 2px;
+        }
+
+        .coverage-status {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: 13px;
+        }
+
+        .status-icon {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-active {
+            background-color: var(--color-success);
+        }
+
+        .status-delayed {
+            background-color: var(--color-warning);
+        }
+
+        .status-label {
+            font-weight: 500;
+        }
+
+        .last-checked {
+            font-size: 13px;
+            color: var(--color-ink-muted);
+        }
+
+        .notes {
+            font-size: 12px;
+            color: var(--color-ink-muted);
+            line-height: 1.5;
+        }
+
+        .expand-button {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--color-rule);
+            background-color: var(--color-surface);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 150ms ease;
+            padding: 0;
+        }
+
+        .expand-button svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2px;
+        }
+
+        .expand-button:hover {
+            border-color: var(--color-accent);
+            background-color: var(--color-surface-raised);
+        }
+
+        .info-banner {
+            background-color: rgba(0, 82, 204, 0.05);
+            border: 1px solid rgba(0, 82, 204, 0.2);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            margin-bottom: var(--space-8);
+            display: flex;
+            gap: var(--space-3);
+        }
+
+        .info-banner svg {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2px;
+            color: var(--color-accent);
+            flex-shrink: 0;
+        }
+
+        .info-banner-text {
+            font-size: 13px;
+            color: var(--color-ink-muted);
+            line-height: 1.5;
+        }
+
+        .info-banner-text strong {
+            color: var(--color-ink);
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="page-header">
+            <h1 class="page-title">Source Coverage</h1>
+            <p class="page-subtitle">See which tender sources are active and when they were last checked</p>
+        </div>
+
+        <div class="info-banner">
+            <svg data-lucide="info"></svg>
+            <div class="info-banner-text">
+                <strong>All sources are monitored continuously.</strong> We check for updates every 4-12 hours depending on source type.
+                "Temporarily delayed" means we encountered a technical issue but will retry automatically.
+            </div>
+        </div>
+
+        <div class="source-table">
+            <div class="table-row table-header">
+                <div>Source</div>
+                <div>Region</div>
+                <div>Coverage State</div>
+                <div>Last Checked</div>
+                <div></div>
+            </div>
+
+            <div class="table-row">
+                <div class="source-name">EU TED (Tenders Electronic Daily)</div>
+                <div><div class="region-badge"><svg data-lucide="globe"></svg> EU</div></div>
+                <div>
+                    <div class="coverage-status">
+                        <div class="status-icon status-active"></div>
+                        <span class="status-label">Active</span>
+                    </div>
+                </div>
+                <div class="last-checked">12 min ago</div>
+                <button class="expand-button" title="Details"><svg data-lucide="info"></svg></button>
+            </div>
+
+            <div class="table-row">
+                <div class="source-name">National e-Procurement Portal (Singapore)</div>
+                <div><div class="region-badge"><svg data-lucide="globe"></svg> Singapore</div></div>
+                <div>
+                    <div class="coverage-status">
+                        <div class="status-icon status-active"></div>
+                        <span class="status-label">Active</span>
+                    </div>
+                </div>
+                <div class="last-checked">8 min ago</div>
+                <button class="expand-button" title="Details"><svg data-lucide="info"></svg></button>
+            </div>
+
+            <div class="table-row">
+                <div class="source-name">Government Procurement System (Thailand)</div>
+                <div><div class="region-badge"><svg data-lucide="globe"></svg> Thailand</div></div>
+                <div>
+                    <div class="coverage-status">
+                        <div class="status-icon status-active"></div>
+                        <span class="status-label">Active</span>
+                    </div>
+                </div>
+                <div class="last-checked">15 min ago</div>
+                <button class="expand-button" title="Details"><svg data-lucide="info"></svg></button>
+            </div>
+
+            <div class="table-row">
+                <div class="source-name">Australian Government Contracts Finder</div>
+                <div><div class="region-badge"><svg data-lucide="globe"></svg> Australia</div></div>
+                <div>
+                    <div class="coverage-status">
+                        <div class="status-icon status-delayed"></div>
+                        <span class="status-label">Temporarily delayed</span>
+                    </div>
+                </div>
+                <div class="last-checked">2 hours ago</div>
+                <button class="expand-button" title="Details"><svg data-lucide="info"></svg></button>
+            </div>
+
+            <div class="table-row">
+                <div class="source-name">World Bank Procurement (Open Access)</div>
+                <div><div class="region-badge"><svg data-lucide="globe"></svg> Global</div></div>
+                <div>
+                    <div class="coverage-status">
+                        <div class="status-icon status-active"></div>
+                        <span class="status-label">Active</span>
+                    </div>
+                </div>
+                <div class="last-checked">22 min ago</div>
+                <button class="expand-button" title="Details"><svg data-lucide="info"></svg></button>
+            </div>
+
+            <div class="table-row">
+                <div class="source-name">LinkedIn Recruiter (Job postings)</div>
+                <div><div class="region-badge"><svg data-lucide="globe"></svg> Global</div></div>
+                <div>
+                    <div class="coverage-status">
+                        <div class="status-icon status-active"></div>
+                        <span class="status-label">Active</span>
+                    </div>
+                </div>
+                <div class="last-checked">3 min ago</div>
+                <button class="expand-button" title="Details"><svg data-lucide="info"></svg></button>
+            </div>
+        </div>
+
+        <div style="margin-top: var(--space-8); padding: var(--space-6); background-color: var(--color-surface); border: 1px solid var(--color-rule); border-radius: var(--radius-md);">
+            <h3 style="font-family: 'Space Grotesk', sans-serif; font-size: 14px; margin-bottom: var(--space-3);">Coverage details</h3>
+            <div style="font-size: 13px; color: var(--color-ink-muted); line-height: 1.8;">
+                <div style="margin-bottom: var(--space-3);"><strong>Active:</strong> Source is responding normally. All notices published in the last check interval are included in your matching.</div>
+                <div style="margin-bottom: var(--space-3);"><strong>Temporarily delayed:</strong> We encountered a network or source issue. We'll retry automatically. Existing matches remain available.</div>
+                <div style="margin-bottom: var(--space-3);"><strong>Last Checked:</strong> Time elapsed since our last successful fetch. Checks happen 4–12 times daily depending on source update frequency.</div>
+                <div><strong>Notes:</strong> Outage info, planned maintenance windows, and data freshness guarantees (when applicable) appear here.</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

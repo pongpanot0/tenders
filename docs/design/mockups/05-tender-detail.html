@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tender Detail - Tender Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.css">
+    <style>
+        :root {
+            --color-canvas: #f5f7fa;
+            --color-surface: #ffffff;
+            --color-surface-raised: #eef1f7;
+            --color-ink: #0f172a;
+            --color-ink-muted: #64748b;
+            --color-ink-faint: #cbd5e1;
+            --color-rule: #e2e8f0;
+            --color-accent: #0052cc;
+            --color-accent-ink: #ffffff;
+            --color-warning: #d97706;
+            --color-success: #16a34a;
+            --color-danger: #dc2626;
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-canvas);
+            color: var(--color-ink);
+        }
+
+        .page {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: var(--space-8);
+        }
+
+        .header {
+            margin-bottom: var(--space-6);
+        }
+
+        .header-meta {
+            font-size: 12px;
+            color: var(--color-ink-muted);
+            margin-bottom: var(--space-3);
+        }
+
+        .header-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: var(--space-5);
+            line-height: 1.2;
+        }
+
+        .header-info {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-6);
+            margin-bottom: var(--space-6);
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+
+        .info-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--color-ink-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-ink);
+        }
+
+        .action-bar {
+            display: flex;
+            gap: var(--space-4);
+            flex-wrap: wrap;
+            padding: var(--space-5) var(--space-6);
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-8);
+        }
+
+        button {
+            padding: 10px var(--space-4);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 150ms ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        button svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2px;
+        }
+
+        .button-primary {
+            background-color: var(--color-accent);
+            color: var(--color-accent-ink);
+            border-color: var(--color-accent);
+        }
+
+        .button-primary:hover {
+            background-color: #0043a8;
+        }
+
+        .button-secondary {
+            background-color: var(--color-surface-raised);
+            color: var(--color-ink);
+        }
+
+        .button-secondary:hover {
+            background-color: var(--color-canvas);
+        }
+
+        .decision-strip {
+            background-color: var(--color-surface-raised);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-6);
+            margin-bottom: var(--space-8);
+        }
+
+        .decision-score {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            margin-bottom: var(--space-4);
+        }
+
+        .score-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 70px;
+            height: 70px;
+            background-color: white;
+            border: 2px solid var(--color-accent);
+            border-radius: var(--radius-md);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--color-accent);
+        }
+
+        .score-text {
+            flex: 1;
+        }
+
+        .score-band {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-accent);
+        }
+
+        .score-deadline {
+            font-size: 13px;
+            color: var(--color-warning);
+            font-weight: 500;
+        }
+
+        .score-confidence {
+            font-size: 13px;
+            color: var(--color-ink-muted);
+        }
+
+        .decision-bullets {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-4);
+            margin-top: var(--space-4);
+        }
+
+        .decision-bullet {
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--color-ink);
+            padding-left: var(--space-6);
+            position: relative;
+        }
+
+        .decision-bullet svg {
+            position: absolute;
+            left: 0;
+            color: var(--color-success);
+            width: 16px;
+            height: 16px;
+            stroke-width: 2px;
+        }
+
+        .decision-risk {
+            background-color: rgba(220, 38, 38, 0.08);
+            border-left: 3px solid var(--color-danger);
+            padding: var(--space-4) var(--space-5);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            color: var(--color-danger);
+            font-weight: 500;
+            display: flex;
+            align-items: start;
+            gap: var(--space-2);
+        }
+
+        .decision-risk svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: var(--space-6);
+            border-bottom: 1px solid var(--color-rule);
+            margin-bottom: var(--space-8);
+            background-color: var(--color-surface);
+            padding: 0 var(--space-6);
+        }
+
+        .tab {
+            padding: var(--space-4) 0;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--color-ink-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 150ms ease;
+            text-decoration: none;
+        }
+
+        .tab:hover {
+            color: var(--color-ink);
+        }
+
+        .tab.active {
+            color: var(--color-accent);
+            border-bottom-color: var(--color-accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Overview Tab */
+        .section {
+            margin-bottom: var(--space-8);
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-6);
+        }
+
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: var(--space-4);
+            color: var(--color-ink);
+        }
+
+        .section-subtitle {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--color-ink-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--space-3);
+        }
+
+        .section-text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--color-ink);
+            margin-bottom: var(--space-4);
+        }
+
+        .section-text.label {
+            color: var(--color-ink-muted);
+            font-size: 12px;
+            font-style: italic;
+            margin-bottom: var(--space-3);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-6);
+            margin-top: var(--space-4);
+        }
+
+        .info-field {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+
+        .info-field-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--color-ink-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-field-value {
+            font-size: 14px;
+            color: var(--color-ink);
+            font-weight: 500;
+        }
+
+        .requirement-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .requirement-table thead tr {
+            background-color: var(--color-canvas);
+            border-bottom: 1px solid var(--color-rule-strong);
+        }
+
+        .requirement-table th {
+            padding: var(--space-3) var(--space-4);
+            text-align: left;
+            font-weight: 600;
+            color: var(--color-ink);
+        }
+
+        .requirement-table td {
+            padding: var(--space-4);
+            border-bottom: 1px solid var(--color-rule);
+        }
+
+        .requirement-table tbody tr:hover {
+            background-color: var(--color-canvas);
+        }
+
+        .risk-item {
+            margin-bottom: var(--space-4);
+            padding: var(--space-4);
+            background-color: rgba(220, 38, 38, 0.05);
+            border-left: 3px solid var(--color-danger);
+            border-radius: var(--radius-sm);
+        }
+
+        .risk-title {
+            font-weight: 600;
+            color: var(--color-danger);
+            font-size: 13px;
+            margin-bottom: var(--space-2);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .risk-title svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2px;
+        }
+
+        .risk-text {
+            font-size: 13px;
+            color: var(--color-ink);
+            line-height: 1.5;
+        }
+
+        .risk-item.info {
+            background-color: rgba(0, 82, 204, 0.05);
+            border-left-color: var(--color-accent);
+        }
+
+        .risk-item.info .risk-title {
+            color: var(--color-accent);
+        }
+
+        /* Requirements Tab */
+        .filter-tabs {
+            display: flex;
+            gap: var(--space-3);
+            margin-bottom: var(--space-4);
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: var(--space-2) var(--space-3);
+            background-color: var(--color-canvas);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--color-ink-muted);
+        }
+
+        .filter-tab.active {
+            background-color: var(--color-accent);
+            color: white;
+            border-color: var(--color-accent);
+        }
+
+        .state-controls {
+            position: fixed;
+            bottom: var(--space-8);
+            left: var(--space-8);
+            background: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            display: flex;
+            gap: var(--space-2);
+            flex-wrap: wrap;
+            max-width: 500px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+        }
+
+        .state-button {
+            padding: var(--space-2) var(--space-3);
+            background: var(--color-canvas);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 150ms ease;
+            font-weight: 500;
+        }
+
+        .state-button:hover {
+            background: var(--color-surface-raised);
+            border-color: var(--color-accent);
+        }
+
+        .state-button.active {
+            background: var(--color-accent);
+            color: white;
+            border-color: var(--color-accent);
+        }
+
+        @media (max-width: 768px) {
+            .header-info {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .decision-bullets {
+                grid-template-columns: 1fr;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .requirement-table {
+                font-size: 12px;
+            }
+
+            .requirement-table th,
+            .requirement-table td {
+                padding: var(--space-2) var(--space-3);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="header">
+            <div class="header-meta">Open · Posted by Government Procurement Committee · Updated 3 days ago</div>
+            <h1 class="header-title">Cloud case management platform for healthcare</h1>
+            <div class="header-info">
+                <div class="info-item">
+                    <span class="info-label">Buyer</span>
+                    <span class="info-value">Ministry of Health</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Country</span>
+                    <span class="info-value">Singapore</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Estimated value</span>
+                    <span class="info-value">$150k – $250k</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Deadline</span>
+                    <span class="info-value">28 Sep (5 days)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-bar">
+            <button class="button-primary">Mark pursuing</button>
+            <button class="button-secondary"><svg data-lucide="heart"></svg> Save</button>
+            <button class="button-secondary">Dismiss</button>
+            <button class="button-secondary"><svg data-lucide="more-vertical"></svg> More</button>
+            <button class="button-secondary" style="margin-left: auto;">Open source <svg data-lucide="external-link"></svg></button>
+        </div>
+
+        <div class="decision-strip">
+            <div class="decision-score">
+                <div class="score-box">87</div>
+                <div class="score-text">
+                    <div class="score-band">Strong match</div>
+                    <div class="score-deadline">Deadline in 5 days</div>
+                    <div class="score-confidence">Analysis confidence: High</div>
+                </div>
+            </div>
+            <div class="decision-bullets">
+                <div class="decision-bullet"><svg data-lucide="check-circle"></svg> React / AWS delivery expertise matches tender requirements</div>
+                <div class="decision-bullet"><svg data-lucide="check-circle"></svg> Budget $150k–$250k within target range</div>
+            </div>
+            <div class="decision-risk">
+                <svg data-lucide="alert-triangle"></svg>
+                <span>Needs verification: Local registration requirement may require on-site presence</span>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <a href="#" class="tab active" onclick="switchTab('overview')">Overview</a>
+            <a href="#" class="tab" onclick="switchTab('requirements')">Requirements</a>
+            <a href="#" class="tab" onclick="switchTab('documents')">Documents</a>
+            <a href="#" class="tab" onclick="switchTab('activity')">Activity</a>
+            <a href="#" class="tab" onclick="switchTab('versions')">Versions</a>
+        </div>
+
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active">
+            <div class="section">
+                <div class="section-title">At a glance</div>
+                <div class="info-grid">
+                    <div class="info-field">
+                        <span class="info-field-label">Source</span>
+                        <span class="info-field-value">EU TED</span>
+                    </div>
+                    <div class="info-field">
+                        <span class="info-field-label">Notice Type</span>
+                        <span class="info-field-value">Open call for proposals</span>
+                    </div>
+                    <div class="info-field">
+                        <span class="info-field-label">Published</span>
+                        <span class="info-field-value">25 Sep, 2:14 AM</span>
+                    </div>
+                    <div class="info-field">
+                        <span class="info-field-label">Delivery location</span>
+                        <span class="info-field-value">Singapore (on-site)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">AI summary</div>
+                <div class="section-text label">Based on available notice text</div>
+                <div class="section-text">
+                    Ministry of Health seeks a cloud-based case management platform to streamline patient intake, assessment, and follow-up workflows across 45 clinics nationwide. The platform must integrate with existing EHR systems, support multi-language UI, and provide role-based access controls. Implementation must be completed within 6 months of contract award. Current systems are legacy on-premise; migration assistance required.
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Why it fits</div>
+                <ul style="list-style: none; padding-left: 0;">
+                    <li style="margin-bottom: var(--space-3); font-size: 13px; line-height: 1.5; padding-left: var(--space-6); position: relative;">
+                        <svg data-lucide="check-circle" style="position: absolute; left: 0; color: var(--color-success); width: 16px; height: 16px; stroke-width: 2px;"></svg>
+                        React and AWS expertise matches tender's technology stack preference
+                    </li>
+                    <li style="margin-bottom: var(--space-3); font-size: 13px; line-height: 1.5; padding-left: var(--space-6); position: relative;">
+                        <svg data-lucide="check-circle" style="position: absolute; left: 0; color: var(--color-success); width: 16px; height: 16px; stroke-width: 2px;"></svg>
+                        Budget $150k–$250k aligns with your typical project size
+                    </li>
+                    <li style="margin-bottom: var(--space-3); font-size: 13px; line-height: 1.5; padding-left: var(--space-6); position: relative;">
+                        <svg data-lucide="check-circle" style="position: absolute; left: 0; color: var(--color-success); width: 16px; height: 16px; stroke-width: 2px;"></svg>
+                        6-month timeline fits your delivery capacity
+                    </li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Risks & questions</div>
+                <div class="risk-item">
+                    <div class="risk-title"><svg data-lucide="alert-triangle"></svg> Potential blocker</div>
+                    <div class="risk-text">Local registration requirement. The notice specifies tenderers must be legally registered entities in Singapore. Clarify whether a foreign parent with a local subsidiary satisfies this requirement.</div>
+                </div>
+                <div class="risk-item">
+                    <div class="risk-title"><svg data-lucide="help-circle"></svg> Verify before bidding</div>
+                    <div class="risk-text">EHR integration scope. Current requirement mentions "compatibility with industry-standard EHR APIs." Confirm which specific systems/versions are in use before committing to scope.</div>
+                </div>
+                <div class="risk-item info">
+                    <div class="risk-title"><svg data-lucide="info"></svg> Missing information</div>
+                    <div class="risk-text">User acceptance testing (UAT) phase and acceptance criteria are not stated in the available documents. Could not verify UAT duration or budget implications from provided tender materials.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Requirements Tab -->
+        <div id="requirements" class="tab-content">
+            <div class="section">
+                <div style="margin-bottom: var(--space-4);">
+                    <div class="filter-tabs">
+                        <div class="filter-tab active">All</div>
+                        <div class="filter-tab">Mandatory</div>
+                        <div class="filter-tab">Preferred</div>
+                        <div class="filter-tab">Eligibility</div>
+                    </div>
+                </div>
+                <table class="requirement-table">
+                    <thead>
+                        <tr>
+                            <th>Requirement</th>
+                            <th>Type</th>
+                            <th>Your status</th>
+                            <th>Confidence</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>ISO 27001 certification</strong></td>
+                            <td>Mandatory</td>
+                            <td style="color: var(--color-success); font-weight: 500;"><svg data-lucide="check-circle" style="width: 14px; height: 14px; stroke-width: 2px; display: inline; margin-right: 4px;"></svg> Match</td>
+                            <td>High</td>
+                        </tr>
+                        <tr>
+                            <td><strong>React / TypeScript experience</strong></td>
+                            <td>Mandatory</td>
+                            <td style="color: var(--color-success); font-weight: 500;"><svg data-lucide="check-circle" style="width: 14px; height: 14px; stroke-width: 2px; display: inline; margin-right: 4px;"></svg> Match</td>
+                            <td>High</td>
+                        </tr>
+                        <tr>
+                            <td><strong>AWS cloud deployment</strong></td>
+                            <td>Mandatory</td>
+                            <td style="color: var(--color-success); font-weight: 500;"><svg data-lucide="check-circle" style="width: 14px; height: 14px; stroke-width: 2px; display: inline; margin-right: 4px;"></svg> Match</td>
+                            <td>High</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Local legal entity registration (Singapore)</strong></td>
+                            <td>Eligibility</td>
+                            <td style="color: var(--color-warning); font-weight: 500;"><svg data-lucide="alert-triangle" style="width: 14px; height: 14px; stroke-width: 2px; display: inline; margin-right: 4px;"></svg> Needs verification</td>
+                            <td>Medium</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Healthcare domain experience (3+ years)</strong></td>
+                            <td>Preferred</td>
+                            <td style="color: var(--color-ink-muted); font-weight: 500;">~ Unknown</td>
+                            <td>Low</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Documents Tab -->
+        <div id="documents" class="tab-content">
+            <div class="section">
+                <div class="section-title">Tender documents</div>
+                <table class="requirement-table">
+                    <thead>
+                        <tr>
+                            <th>Document</th>
+                            <th>Size</th>
+                            <th>Status</th>
+                            <th>Last checked</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>RFP_MOH_Cloud_2024.pdf</strong></td>
+                            <td>2.3 MB</td>
+                            <td style="color: var(--color-success);"><svg data-lucide="check-circle" style="width: 14px; height: 14px; stroke-width: 2px; display: inline; margin-right: 4px;"></svg> Ready to review</td>
+                            <td>2 min ago</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Technical Requirements.pdf</strong></td>
+                            <td>1.8 MB</td>
+                            <td style="color: var(--color-warning);"><svg data-lucide="loader" style="width: 14px; height: 14px; stroke-width: 2px; display: inline; margin-right: 4px;"></svg> Text extraction in progress</td>
+                            <td>1 min ago</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Evaluation Criteria.pdf</strong></td>
+                            <td>956 KB</td>
+                            <td style="color: var(--color-success);"><svg data-lucide="check-circle" style="width: 14px; height: 14px; stroke-width: 2px; display: inline; margin-right: 4px;"></svg> Ready to review</td>
+                            <td>3 min ago</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Activity Tab -->
+        <div id="activity" class="tab-content">
+            <div class="section">
+                <div style="font-size: 13px; line-height: 1.8; color: var(--color-ink);">
+                    <div style="margin-bottom: var(--space-4); padding-bottom: var(--space-4); border-bottom: 1px solid var(--color-rule); display: flex; justify-content: space-between;">
+                        <div><strong>25 Sep, 2:14 AM</strong> — Tender discovered and added to matching queue</div>
+                        <span style="color: var(--color-ink-faint);">System</span>
+                    </div>
+                    <div style="margin-bottom: var(--space-4); padding-bottom: var(--space-4); border-bottom: 1px solid var(--color-rule); display: flex; justify-content: space-between;">
+                        <div><strong>25 Sep, 2:16 AM</strong> — Documents extracted (3 files)</div>
+                        <span style="color: var(--color-ink-faint);">System</span>
+                    </div>
+                    <div style="margin-bottom: var(--space-4); padding-bottom: var(--space-4); border-bottom: 1px solid var(--color-rule); display: flex; justify-content: space-between;">
+                        <div><strong>25 Sep, 2:18 AM</strong> — Match analysis completed (score: 87)</div>
+                        <span style="color: var(--color-ink-faint);">System</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <div><strong>25 Sep, 2:19 AM</strong> — Tender added to your inbox</div>
+                        <span style="color: var(--color-ink-faint);">System</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Versions Tab -->
+        <div id="versions" class="tab-content">
+            <div class="section">
+                <div class="section-text" style="text-align: center; color: var(--color-ink-faint); padding: var(--space-6);">
+                    No changes recorded. This is version 1.0 of this tender.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- State Toggle Controls -->
+    <div class="state-controls">
+        <button class="state-button active" onclick="switchTab('overview')">Overview tab</button>
+        <button class="state-button" onclick="switchTab('requirements')">Requirements</button>
+        <button class="state-button" onclick="switchTab('documents')">Documents</button>
+        <button class="state-button" onclick="switchTab('activity')">Activity</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            event.preventDefault();
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>

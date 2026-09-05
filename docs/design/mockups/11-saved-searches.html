@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Searches - Tender Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.css">
+    <style>
+        :root {
+            --color-canvas: #f5f7fa;
+            --color-surface: #ffffff;
+            --color-surface-raised: #eef1f7;
+            --color-ink: #0f172a;
+            --color-ink-muted: #64748b;
+            --color-ink-faint: #cbd5e1;
+            --color-rule: #e2e8f0;
+            --color-accent: #0052cc;
+            --color-accent-ink: #ffffff;
+            --color-success: #16a34a;
+            --color-warning: #d97706;
+            --color-danger: #dc2626;
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-canvas);
+            color: var(--color-ink);
+        }
+
+        .page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space-8);
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-8);
+            flex-wrap: wrap;
+            gap: var(--space-4);
+        }
+
+        .page-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .header-button {
+            padding: var(--space-3) var(--space-4);
+            background-color: var(--color-accent);
+            color: var(--color-accent-ink);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            transition: all 150ms ease;
+        }
+
+        .header-button svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2px;
+        }
+
+        .header-button:hover {
+            background-color: #0043a8;
+        }
+
+        .search-table {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: var(--space-6);
+            padding: var(--space-5) var(--space-6);
+            border-bottom: 1px solid var(--color-rule);
+            align-items: center;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .table-row:hover {
+            background-color: var(--color-surface-raised);
+        }
+
+        .table-header {
+            background-color: var(--color-canvas);
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--color-ink-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .search-name {
+            font-weight: 600;
+            color: var(--color-accent);
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .search-name:hover {
+            text-decoration: underline;
+        }
+
+        .search-filters {
+            font-size: 12px;
+            color: var(--color-ink-muted);
+            line-height: 1.5;
+        }
+
+        .alert-threshold {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-3);
+            background-color: rgba(0, 82, 204, 0.08);
+            color: var(--color-accent);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 500;
+            width: fit-content;
+        }
+
+        .alert-threshold svg {
+            width: 14px;
+            height: 14px;
+            stroke-width: 2px;
+        }
+
+        .alert-mode {
+            display: flex;
+            align-items: center;
+            gap: var(--space-1);
+            font-size: 12px;
+            color: var(--color-ink-muted);
+        }
+
+        .alert-mode svg {
+            width: 14px;
+            height: 14px;
+            stroke-width: 2px;
+        }
+
+        .actions {
+            display: flex;
+            gap: var(--space-2);
+        }
+
+        .action-button {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--color-rule);
+            background-color: var(--color-surface);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 150ms ease;
+            padding: 0;
+        }
+
+        .action-button svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2px;
+        }
+
+        .action-button:hover {
+            border-color: var(--color-accent);
+            background-color: var(--color-surface-raised);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--space-12);
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            color: var(--color-ink-faint);
+        }
+
+        .empty-state svg {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto var(--space-4);
+            stroke-width: 1.5px;
+        }
+
+        .info-box {
+            background-color: rgba(0, 82, 204, 0.05);
+            border: 1px solid rgba(0, 82, 204, 0.2);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            margin-bottom: var(--space-8);
+            display: flex;
+            gap: var(--space-3);
+        }
+
+        .info-box svg {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2px;
+            color: var(--color-accent);
+            flex-shrink: 0;
+        }
+
+        .info-box-text {
+            font-size: 13px;
+            color: var(--color-ink-muted);
+            line-height: 1.5;
+        }
+
+        .info-box-text strong {
+            color: var(--color-ink);
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="page-header">
+            <h1 class="page-title">Saved Searches</h1>
+            <button class="header-button" onclick="alert('Create new saved search modal')">
+                <svg data-lucide="plus"></svg>
+                New Search Rule
+            </button>
+        </div>
+
+        <div class="info-box">
+            <svg data-lucide="info"></svg>
+            <div class="info-box-text">
+                <strong>Saved searches are tactical rules.</strong> They match new tenders and send alerts when criteria are met.
+                Unlike your company profile (which is company-wide), each rule can override global alert settings and apply to specific teams.
+            </div>
+        </div>
+
+        <div class="search-table">
+            <div class="table-row table-header">
+                <div>Search Name</div>
+                <div>Alert Threshold</div>
+                <div>Delivery Mode</div>
+                <div>Actions</div>
+            </div>
+
+            <div class="table-row">
+                <div>
+                    <a href="#" class="search-name">React + Node.js in Southeast Asia</a>
+                    <div class="search-filters">Countries: Singapore, Thailand, Malaysia · Technology: React, Node.js · Budget: $50k–$500k</div>
+                </div>
+                <div>
+                    <div class="alert-threshold">
+                        <svg data-lucide="zap"></svg>
+                        Strong matches (80+)
+                    </div>
+                </div>
+                <div>
+                    <div class="alert-mode">
+                        <svg data-lucide="mail"></svg>
+                        Email (instant)
+                    </div>
+                </div>
+                <div class="actions">
+                    <button class="action-button" title="Edit"><svg data-lucide="edit-2"></svg></button>
+                    <button class="action-button" title="Delete"><svg data-lucide="trash-2"></svg></button>
+                </div>
+            </div>
+
+            <div class="table-row">
+                <div>
+                    <a href="#" class="search-name">Healthcare IT contracts</a>
+                    <div class="search-filters">Industry: Healthcare · Procedure: Open bidding · Budget: $100k–$1M</div>
+                </div>
+                <div>
+                    <div class="alert-threshold">
+                        <svg data-lucide="zap"></svg>
+                        Worth reviewing (60+)
+                    </div>
+                </div>
+                <div>
+                    <div class="alert-mode">
+                        <svg data-lucide="slack"></svg>
+                        Slack (daily digest)
+                    </div>
+                </div>
+                <div class="actions">
+                    <button class="action-button" title="Edit"><svg data-lucide="edit-2"></svg></button>
+                    <button class="action-button" title="Delete"><svg data-lucide="trash-2"></svg></button>
+                </div>
+            </div>
+
+            <div class="table-row">
+                <div>
+                    <a href="#" class="search-name">Mobile development in ASEAN</a>
+                    <div class="search-filters">Technology: Flutter, React Native · Countries: All ASEAN · Published: Last 7 days</div>
+                </div>
+                <div>
+                    <div class="alert-threshold">
+                        <svg data-lucide="zap"></svg>
+                        All matches (40+)
+                    </div>
+                </div>
+                <div>
+                    <div class="alert-mode">
+                        <svg data-lucide="bell"></svg>
+                        In-app (weekly)
+                    </div>
+                </div>
+                <div class="actions">
+                    <button class="action-button" title="Edit"><svg data-lucide="edit-2"></svg></button>
+                    <button class="action-button" title="Delete"><svg data-lucide="trash-2"></svg></button>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: var(--space-8); padding: var(--space-6); background-color: var(--color-surface); border: 1px solid var(--color-rule); border-radius: var(--radius-md);">
+            <h3 style="font-family: 'Space Grotesk', sans-serif; font-size: 14px; margin-bottom: var(--space-3);">How Saved Searches work</h3>
+            <ul style="font-size: 13px; color: var(--color-ink-muted); line-height: 1.8; padding-left: var(--space-6);">
+                <li><strong>Profile vs. searches:</strong> Your company profile is company-wide matching. Saved searches are team-specific tactical rules.</li>
+                <li><strong>Alert override:</strong> Each rule can set its own threshold and delivery mode, overriding global alert settings.</li>
+                <li><strong>Instant + digest:</strong> Choose instant alerts for critical searches (e.g., specific technologies) or daily/weekly digests for broader research.</li>
+                <li><strong>Team collaboration:</strong> Assign search owners and share results with specific team members.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

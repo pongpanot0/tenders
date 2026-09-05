@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pipeline Workspace - Tender Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.css">
+    <style>
+        :root {
+            --color-canvas: #f5f7fa;
+            --color-surface: #ffffff;
+            --color-surface-raised: #eef1f7;
+            --color-ink: #0f172a;
+            --color-ink-muted: #64748b;
+            --color-ink-faint: #cbd5e1;
+            --color-rule: #e2e8f0;
+            --color-accent: #0052cc;
+            --color-accent-ink: #ffffff;
+            --color-warning: #d97706;
+            --color-success: #16a34a;
+            --color-danger: #dc2626;
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-canvas);
+            color: var(--color-ink);
+        }
+
+        .page {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: var(--space-8);
+            padding: var(--space-8);
+            max-width: 1600px;
+            margin: 0 auto;
+            min-height: 100vh;
+        }
+
+        .main-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .page-header {
+            margin-bottom: var(--space-8);
+        }
+
+        .page-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: var(--space-3);
+        }
+
+        .board-container {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: var(--space-6);
+            overflow-x: auto;
+            padding-bottom: var(--space-4);
+        }
+
+        .board-column {
+            background-color: var(--color-canvas);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            display: flex;
+            flex-direction: column;
+            min-width: 280px;
+        }
+
+        .column-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-4);
+            padding-bottom: var(--space-4);
+            border-bottom: 1px solid var(--color-rule);
+        }
+
+        .column-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-ink);
+        }
+
+        .column-count {
+            font-size: 12px;
+            background-color: var(--color-surface-raised);
+            color: var(--color-ink-muted);
+            padding: var(--space-1) var(--space-2);
+            border-radius: var(--radius-sm);
+        }
+
+        .pipeline-card {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            margin-bottom: var(--space-3);
+            cursor: pointer;
+            transition: all 150ms ease;
+        }
+
+        .pipeline-card:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border-color: var(--color-accent);
+        }
+
+        .card-score {
+            display: inline-block;
+            background-color: rgba(0, 82, 204, 0.1);
+            color: var(--color-accent);
+            padding: var(--space-1) var(--space-2);
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: var(--space-2);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .card-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: var(--space-2);
+            color: var(--color-ink);
+            line-height: 1.4;
+        }
+
+        .card-buyer {
+            font-size: 11px;
+            color: var(--color-ink-muted);
+            margin-bottom: var(--space-3);
+        }
+
+        .card-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--color-ink-muted);
+        }
+
+        .card-deadline {
+            color: var(--color-warning);
+            font-weight: 500;
+        }
+
+        .card-owner {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--color-accent);
+            color: var(--color-accent-ink);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* Context Panel */
+        .context-panel {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-md);
+            padding: var(--space-6);
+            height: fit-content;
+            position: sticky;
+            top: var(--space-8);
+        }
+
+        .context-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: var(--space-4);
+            color: var(--color-ink);
+        }
+
+        .context-section {
+            margin-bottom: var(--space-6);
+            padding-bottom: var(--space-4);
+            border-bottom: 1px solid var(--color-rule);
+        }
+
+        .context-section:last-child {
+            border-bottom: none;
+        }
+
+        .section-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--color-ink-faint);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--space-2);
+        }
+
+        .section-value {
+            font-size: 13px;
+            color: var(--color-ink);
+            line-height: 1.5;
+        }
+
+        .owner-avatars {
+            display: flex;
+            gap: var(--space-2);
+            flex-wrap: wrap;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--color-accent);
+            color: var(--color-accent-ink);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid var(--color-rule);
+        }
+
+        .notes-textarea {
+            width: 100%;
+            padding: var(--space-3);
+            border: 1px solid var(--color-rule);
+            border-radius: var(--radius-sm);
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            color: var(--color-ink);
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .notes-textarea::placeholder {
+            color: var(--color-ink-faint);
+        }
+
+        .stage-history {
+            font-size: 12px;
+            color: var(--color-ink-muted);
+            line-height: 1.6;
+        }
+
+        .history-item {
+            display: flex;
+            gap: var(--space-2);
+            margin-bottom: var(--space-2);
+        }
+
+        .history-item svg {
+            width: 14px;
+            height: 14px;
+            stroke-width: 2px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--space-8);
+            color: var(--color-ink-faint);
+        }
+
+        .empty-state svg {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto var(--space-4);
+            stroke-width: 1.5px;
+        }
+
+        @media (max-width: 1280px) {
+            .page {
+                grid-template-columns: 1fr;
+            }
+
+            .context-panel {
+                position: static;
+            }
+        }
+
+        @media (max-width: 960px) {
+            .board-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <!-- Main Board -->
+        <div class="main-column">
+            <div class="page-header">
+                <h1 class="page-title">Pipeline</h1>
+            </div>
+
+            <div class="board-container">
+                <div class="board-column">
+                    <div class="column-header">
+                        <span class="column-title">New</span>
+                        <span class="column-count">2</span>
+                    </div>
+                </div>
+
+                <div class="board-column">
+                    <div class="column-header">
+                        <span class="column-title">Reviewing</span>
+                        <span class="column-count">1</span>
+                    </div>
+                    <div class="pipeline-card" onclick="selectCard(this)">
+                        <div class="card-score">84</div>
+                        <div class="card-title">Mobile service platform</div>
+                        <div class="card-buyer">State Bank</div>
+                        <div class="card-meta">
+                            <span class="card-deadline">02 Oct</span>
+                            <div class="card-owner">S</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="board-column">
+                    <div class="column-header">
+                        <span class="column-title">Pursuing</span>
+                        <span class="column-count">3</span>
+                    </div>
+                    <div class="pipeline-card" onclick="selectCard(this)">
+                        <div class="card-score">91</div>
+                        <div class="card-title">Cloud case management</div>
+                        <div class="card-buyer">Ministry of Health</div>
+                        <div class="card-meta">
+                            <span class="card-deadline">28 Sep</span>
+                            <div class="card-owner">J</div>
+                        </div>
+                    </div>
+                    <div class="pipeline-card" onclick="selectCard(this)">
+                        <div class="card-score">78</div>
+                        <div class="card-title">IoT platform for hospitals</div>
+                        <div class="card-buyer">Health Commission</div>
+                        <div class="card-meta">
+                            <span>15 Oct</span>
+                            <div class="card-owner">A</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="board-column">
+                    <div class="column-header">
+                        <span class="column-title">Submitted</span>
+                        <span class="column-count">1</span>
+                    </div>
+                    <div class="pipeline-card" onclick="selectCard(this)">
+                        <div class="card-score">81</div>
+                        <div class="card-title">Data analytics system</div>
+                        <div class="card-buyer">Finance Department</div>
+                        <div class="card-meta">
+                            <span>12 Oct</span>
+                            <div class="card-owner">R</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="board-column">
+                    <div class="column-header">
+                        <span class="column-title">Won</span>
+                        <span class="column-count">2</span>
+                    </div>
+                </div>
+
+                <div class="board-column">
+                    <div class="column-header">
+                        <span class="column-title">Lost</span>
+                        <span class="column-count">1</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Context Panel -->
+        <div class="context-panel" id="contextPanel">
+            <div class="empty-state">
+                <svg data-lucide="hand-pointer"></svg>
+                <div>Select a card to view details</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        lucide.createIcons();
+
+        function selectCard(card) {
+            const panelHTML = `
+                <div class="context-title">Cloud case management</div>
+
+                <div class="context-section">
+                    <div class="section-label">Owner & Collaborators</div>
+                    <div class="owner-avatars">
+                        <div class="avatar" title="James">J</div>
+                        <div class="avatar" title="Alex">A</div>
+                    </div>
+                </div>
+
+                <div class="context-section">
+                    <div class="section-label">Next Action Date</div>
+                    <div class="section-value">26 Sep 2026 (in 2 days)</div>
+                </div>
+
+                <div class="context-section">
+                    <div class="section-label">Internal Notes</div>
+                    <textarea class="notes-textarea" placeholder="Add notes about this opportunity...">Need to clarify technical requirements. Waiting for vendor feedback on timeline.</textarea>
+                </div>
+
+                <div class="context-section">
+                    <div class="section-label">Stage History</div>
+                    <div class="stage-history">
+                        <div class="history-item">
+                            <svg data-lucide="check-circle"></svg>
+                            <span>Moved to Pursuing by James on 20 Sep</span>
+                        </div>
+                        <div class="history-item">
+                            <svg data-lucide="arrow-right"></svg>
+                            <span>Discovered on 15 Sep</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('contextPanel').innerHTML = panelHTML;
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>
