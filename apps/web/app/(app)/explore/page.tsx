@@ -1,29 +1,45 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { mockTenders } from '@/lib/mock-data';
-import { Save, Columns, ChevronDown, Search } from 'lucide-react';
+import { useState, useMemo, useEffect } from 'react';
+import { fetchTenders, Tender } from '@/lib/api';
+import { Save, Columns, ChevronDown, Search, RefreshCw } from 'lucide-react';
 import ExploreTable from './ExploreTable';
 
 export default function ExplorePage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showFitColumn, setShowFitColumn] = useState(true);
+  const [tenders, setTenders] = useState<Tender[]>([]);
+  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+
+  const loadTenders = () => {
+    setStatus('loading');
+    fetchTenders()
+      .then((data) => {
+        setTenders(data);
+        setStatus('ready');
+      })
+      .catch(() => setStatus('error'));
+  };
+
+  useEffect(() => {
+    loadTenders();
+  }, []);
 
   // Filter tenders based on search query (title, buyer, fitTags, source)
   const filteredTenders = useMemo(() => {
     if (!searchQuery.trim()) {
-      return mockTenders;
+      return tenders;
     }
 
     const query = searchQuery.toLowerCase();
-    return mockTenders.filter(
+    return tenders.filter(
       (tender) =>
         tender.title.toLowerCase().includes(query) ||
         tender.buyerName.toLowerCase().includes(query) ||
         tender.fitTags.some((tag) => tag.toLowerCase().includes(query)) ||
         tender.source.toLowerCase().includes(query)
     );
-  }, [searchQuery]);
+  }, [searchQuery, tenders]);
 
   const handleClearFilters = () => {
     setSearchQuery('');
@@ -93,8 +109,14 @@ export default function ExplorePage() {
       {/* Results Header */}
       <div className="mb-6 flex justify-between items-center flex-wrap gap-4">
         <div className="text-sm text-ink-muted">
-          Found <strong>{filteredTenders.length}</strong> result
-          {filteredTenders.length !== 1 ? 's' : ''}
+          {status === 'loading'
+            ? 'Loading…'
+            : (
+              <>
+                Found <strong>{filteredTenders.length}</strong> result
+                {filteredTenders.length !== 1 ? 's' : ''}
+              </>
+            )}
         </div>
         <select className="px-3 py-2 border border-rule rounded-md text-sm text-ink bg-surface hover:border-accent focus:outline-none focus:border-accent">
           <option>Sort: Relevance</option>
@@ -104,8 +126,25 @@ export default function ExplorePage() {
         </select>
       </div>
 
-      {/* Results Table or Empty State */}
-      {filteredTenders.length === 0 ? (
+      {/* Results Table / Empty / Error / Loading state */}
+      {status === 'error' ? (
+        <div className="bg-surface border border-rule rounded-md p-12 text-center">
+          <div className="text-sm text-ink-faint mb-4">
+            Could not load tenders. Retry.
+          </div>
+          <button
+            onClick={loadTenders}
+            className="px-4 py-2 bg-surface-raised border border-rule rounded-md text-sm text-ink hover:border-accent hover:bg-white transition-all inline-flex items-center gap-2"
+          >
+            <RefreshCw size={16} />
+            Retry
+          </button>
+        </div>
+      ) : status === 'loading' ? (
+        <div className="bg-surface border border-rule rounded-md p-12 text-center text-sm text-ink-faint">
+          Loading tenders…
+        </div>
+      ) : filteredTenders.length === 0 ? (
         <div className="bg-surface border border-rule rounded-md p-12 text-center">
           <Search
             size={32}
@@ -113,14 +152,18 @@ export default function ExplorePage() {
             strokeWidth={1.5}
           />
           <div className="text-sm text-ink-faint mb-4">
-            No open tenders match these filters.
+            {tenders.length === 0
+              ? 'No tenders have been ingested yet.'
+              : 'No open tenders match these filters.'}
           </div>
-          <button
-            onClick={handleClearFilters}
-            className="px-4 py-2 bg-surface-raised border border-rule rounded-md text-sm text-ink hover:border-accent hover:bg-white transition-all"
-          >
-            Clear filters
-          </button>
+          {tenders.length > 0 && (
+            <button
+              onClick={handleClearFilters}
+              className="px-4 py-2 bg-surface-raised border border-rule rounded-md text-sm text-ink hover:border-accent hover:bg-white transition-all"
+            >
+              Clear filters
+            </button>
+          )}
         </div>
       ) : (
         <ExploreTable tenders={filteredTenders} showFitColumn={showFitColumn} />
